@@ -8,6 +8,6 @@ This repository contains the SIS project fot the Computer Architecture course at
 - [Roin Giovanni](https://github.com/Kyllen02)
 
 # Contact
-- <rustem.lecini@studenti.univr.it>
-- <luca.bottacini_02@studenti.univr.it>
-- <giovanni.roin@studenti.univr.it>
+- VR471559 <rustem.lecini@studenti.univr.it>
+- VR474339 <luca.bottacini_02@studenti.univr.it>
+- VR471473 <giovanni.roin@studenti.univr.it>

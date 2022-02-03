@@ -1,0 +1,17 @@
+{
+    "name": "watcher",
+    "version": "1.0.0",
+    "description": "Pandoc JS watcher",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^17.0.13",
+        "typescript": "^4.5.5",
+        "eslint": "^6.0.0"
+    }
+}

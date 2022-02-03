@@ -1,0 +1,23 @@
+# Multiplexer a 2 ingressi da 8 bit ciascuno
+.model MUX8B2
+
+.inputs  S A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0
+.outputs O7 O6 O5 O4 O3 O2 O1 O0
+
+# S = 0 seleziono A
+# S = 1 seleziono B
+
+# Istanziazione dei multiplexer per selezionare tra i 2 ingressi
+.subckt MUX1 S=S A=A7 B=B7 O=O7
+.subckt MUX1 S=S A=A6 B=B6 O=O6
+.subckt MUX1 S=S A=A5 B=B5 O=O5
+.subckt MUX1 S=S A=A4 B=B4 O=O4
+.subckt MUX1 S=S A=A3 B=B3 O=O3
+.subckt MUX1 S=S A=A2 B=B2 O=O2
+.subckt MUX1 S=S A=A1 B=B1 O=O1
+.subckt MUX1 S=S A=A0 B=B0 O=O0
+
+.end
+
+# File che contiene il modello del multiplexer
+.search mux1.blif

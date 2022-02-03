@@ -1,11 +1,10 @@
+# Questo blif descrive un registro a 8 bit
 .model REGISTRO8
 .inputs A7 A6 A5 A4 A3 A2 A1 A0
 .outputs O7 O6 O5 O4 O3 O2 O1 O0
 
-# Questo blif descrive un registro a 8 bit
-
-# Istanziazione dei registri che memorizzano il valore di A7, A6, A5, A4, A3, A2, A1 e A0
-.subckt REGISTRO A=A7 O=A7
+# Istanziazione dei registri che memorizzano 8 bit
+.subckt REGISTRO A=A7 O=O7
 .subckt REGISTRO A=A6 O=O6
 .subckt REGISTRO A=A5 O=O5
 .subckt REGISTRO A=A4 O=O4

@@ -1,10 +1,9 @@
-.model SOMMATORE2
+# Sommatore a 8 bit
+.model SOMMATORE8
 .inputs A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0 CIN
 .outputs O7 O6 O5 O4 O3 O2 O1 O0 COUT
 
-# Questo blif descrive un sommatore a 8 bit
-
-# Istanziazione dei sommatori per sommare A0 e B0, ..., A7 e B7
+# Istanziazione dei sommatori per sommare 8 bit
 .subckt SOMMATORE A=A0 B=B0 CIN=CIN O=O0 COUT=C0
 .subckt SOMMATORE A=A1 B=B1 CIN=C0 O=O1 COUT=C1
 .subckt SOMMATORE A=A2 B=B2 CIN=C1 O=O2 COUT=C2

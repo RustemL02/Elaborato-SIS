@@ -1,0 +1,23 @@
+.model SOMMATORE
+.inputs A B CIN
+.outputs O COUT
+
+# Questo blif descrive un sommatore di 2 bit
+
+# Nodo che somma i due bit
+.names A B K
+10 1
+01 1
+
+# Nodo che somma il risultato dei due bit con il Carry-IN
+.names K CIN O
+10 1
+01 1
+
+# Nodo che somma i due bit e il Carry-IN per tirare fuori il Carry-OUT
+.names A B CIN COUT
+11- 1
+1-1 1
+-11 1
+
+.end

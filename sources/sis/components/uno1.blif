@@ -1,0 +1,10 @@
+.model UNO1
+.outputs O
+
+# Questo blif descrive la costante 1 a 1 bit
+
+# Nodo che restituisce 1
+.names O
+1
+
+.end

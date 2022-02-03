@@ -1,0 +1,50 @@
+.model MUX8
+.inputs S0 A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0
+.outputs O7 O6 O5 O4 O3 O2 O1 O0
+
+# Questo blif descrive un multiplexer a 2 ingressi da 8 bit ciascuno
+
+# S = 0 seleziono A
+# S = 1 seleziono B
+
+# Nodo che seleziona il primo bit più significativo di uno dei 2 ingressi
+.names S0 A7 B7 O7
+01- 1
+1-1 1
+
+# Nodo che seleziona il secondo bit più significativo di uno dei 2 ingressi
+.names S0 A6 B6 O6
+01- 1
+1-1 1
+
+# Nodo che seleziona il terzo bit più significativo di uno dei 2 ingressi
+.names S0 A5 B5 O5
+01- 1
+1-1 1
+
+# Nodo che seleziona il quarto bit più significativo di uno dei 2 ingressi
+.names S0 A4 B4 O4
+01- 1
+1-1 1
+
+# Nodo che seleziona il quinto bit più significativo di uno dei 2 ingressi
+.names S0 A3 B3 O3
+01- 1
+1-1 1
+
+# Nodo che seleziona il sesto bit più significativo di uno dei 2 ingressi
+.names S0 A2 B2 O2
+01- 1
+1-1 1
+
+# Nodo che seleziona il settimo bit più significativo di uno dei 2 ingressi
+.names S0 A1 B1 O1
+01- 1
+1-1 1
+
+# Nodo che seleziona l'ottavo bit più significativo di uno dei 2 ingressi
+.names S0 A0 B0 O0
+01- 1
+1-1 1
+
+.end

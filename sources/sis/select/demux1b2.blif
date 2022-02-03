@@ -1,0 +1,12 @@
+.model demux1b2
+
+.inputs  s i
+.outputs x y
+
+.names s i x
+    01 1
+
+.names s i y
+    11 1
+
+.end

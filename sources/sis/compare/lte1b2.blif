@@ -1,0 +1,13 @@
+.model lte1b2
+
+.inputs  a b
+.outputs o
+
+.subckt gt1b2 a=a b=b o=t
+
+.names t o
+    0 1
+
+.search gt1b2.blif
+
+.end

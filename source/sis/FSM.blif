@@ -1,0 +1,48 @@
+# Questo file blif rappresenta il controllore del
+# circuito, cioè la macchina a stati finiti.
+.model FSM
+
+# Gli ingressi ERRORE e CONTROLLO_NEUTRO sono segnali
+# di controllo che sopraggiungono dal Datapath.
+# Le uscite RESET, INIZIO_OPERAZIONE, TIPO_PH e NEUTRO
+# sono segnali di stato che vengono inviati al Datapath.
+.inputs  RST START PH7 PH6 PH5 PH4 PH3 PH2 PH1 PH0 ERRORE CONTROLLO_NEUTRO
+.outputs FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO RESET INIZIO_OPERAZIONE TIPO_PH NEUTRO
+
+.start_kiss
+.i 12       # Numero di segnali di ingresso.
+.o 8        # Numero di segnali di uscita.
+.s 5        # Numero di stati.
+.p 14       # Numero di transizioni.
+.r Reset    # Stato iniziale/di reset.
+
+# Tabella delle transizioni (STT)
+# (ingressi, stato-corrente, stato-prossimo, uscite)
+
+    # Transizioni da Reset
+    1----------- Reset  Reset   000010-0
+    00---------- Reset  Reset   000010-0
+    01--------1- Reset  Errore  010001-0
+    010-------0- Reset  Acido   00010100
+    011-------0- Reset  Basico  00100110
+
+    # Transizione da Errore
+    0----------- Errore Errore  010000-0
+    1----------- Errore Reset   000010-0
+
+    # Transizioni da Acido
+    0----------0 Acido  Acido   00010000
+    0----------1 Acido  Neutro  100000-1
+    1----------- Acido  Reset   000010-0
+
+    # Transizioni da Basico
+    0----------0 Basico Basico  00100010
+    0----------1 Basico Neutro  100000-1
+    1----------- Basico Reset   000010-0
+
+    # Transizioni da Neutro
+    0----------- Neutro Neutro  100000-1
+    1----------- Neutro Reset   000010-0
+
+.end_kiss
+.end

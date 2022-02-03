@@ -1,0 +1,18 @@
+.model OR
+.inputs A B
+.outputs X
+
+# Questo blif fa l'OR tra i due valori inseriti in input
+
+# TABELLA contenente tutte le combinazioni
+# A B  X
+# 0 0  0
+# 0 1  1
+# 1 0  1
+# 1 1  1
+
+# Nodo composto dall'Off-Set della porta logica OR
+.names A B X
+00 0
+
+.end

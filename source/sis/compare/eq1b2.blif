@@ -1,0 +1,10 @@
+.model eq1b2
+
+.inputs  a b
+.outputs o
+
+.names a b o
+    00 1
+    11 1
+
+.end

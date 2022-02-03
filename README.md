@@ -12,7 +12,7 @@ The report is located in the `docs/` directory and is written in *Markdown* form
 
 ## Usage
 
-The circuit is described in the *SIS* format, so you need to [install the language](sis-source) before.
+The circuit is described in the *SIS* format, so you need to [install the language][1] before.
 
 Then, to simulate the execution of the circuit it is sufficient to launch the commands:
 
@@ -38,11 +38,11 @@ sis> quit
 
 The authors of the project are:
 
-- [Bottacini Luca](github-nanolf)
-- [Lecini Rustem](github-rustem)
-- [Roin Giovanni](github-kyllen)
+- [Bottacini Luca][2]
+- [Lecini Rustem][3]
+- [Roin Giovanni][4]
 
-[sis-source]: https://jackhack96.github.io/logic-synthesis/sis.html
-[github-nanolf]: https://github.com/Nanolf
-[github-rustem]: https://github.com/RustemL02
-[github-kyllen]: https://github.com/Kyllen02
+[1]: https://jackhack96.github.io/logic-synthesis/sis.html
+[2]: https://github.com/Nanolf
+[3]: https://github.com/RustemL02
+[4]: https://github.com/Kyllen02

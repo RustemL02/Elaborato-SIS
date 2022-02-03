@@ -1,0 +1,18 @@
+# Calcola la not di un bit.
+.model NOT
+
+# Riceve in entrata un bit da elaborare.
+# Restituisce la not del bit.
+.inputs  A
+.outputs O
+
+# Tabella di verità
+# A O
+# 0 1
+# 1 0
+
+# Nodo che calcola la not di un bit.
+.names A O
+    0 1
+
+.end

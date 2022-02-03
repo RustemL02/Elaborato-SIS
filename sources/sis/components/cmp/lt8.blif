@@ -1,0 +1,42 @@
+# Determina se il modulo del primo numero è minore
+# del modulo appartenente al secondo numero.
+.model LT8
+
+# Riceve in entrata due moduli a 8 bit.
+# Restituisce UNO se il primo modulo è minore del secondo,
+# altrimenti ZERO.
+.inputs  A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0
+.outputs O
+
+# Istanze dell'xor tra tutti i bit di A e B.
+.subckt XOR A=A7 B=B7 O=X7
+.subckt XOR A=A6 B=B6 O=X6
+.subckt XOR A=A5 B=B5 O=X5
+.subckt XOR A=A4 B=B4 O=X4
+.subckt XOR A=A3 B=B3 O=X3
+.subckt XOR A=A2 B=B2 O=X2
+.subckt XOR A=A1 B=B1 O=X1
+.subckt XOR A=A0 B=B0 O=X0
+
+# Se sia l'xor che B equivalgono a UNO, significa che:
+#
+#       "A = !B" => "A = !1" => "A = 0"
+#
+# in altre parole, se per ogni bit del modulo verifichiamo
+# questa condizione, possiamo affermare che B è maggiore di A.
+
+# Nodo che confronta i valori.
+.names B7 B6 B5 B4 B3 B2 B1 B0 B7 X6 X5 X4 X3 X2 X1 X0 O
+    1-------1------- 1
+    -1------01------ 1
+    --1-----001----- 1
+    ---1----0001---- 1
+    ----1---00001--- 1
+    -----1--000001-- 1
+    ------1-0000001- 1
+    -------100000001 1
+
+.end
+
+# File del modello XOR.
+.search xor.Blif

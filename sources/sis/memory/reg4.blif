@@ -1,0 +1,13 @@
+.model reg4
+
+.inputs  a3 a2 a1 a0
+.outputs o3 o2 o1 o0
+
+.subckt reg1 a=a3 o=o3
+.subckt reg1 a=a2 o=o2
+.subckt reg1 a=a1 o=o1
+.subckt reg1 a=a0 o=o0
+
+.search reg1.blif
+
+.end

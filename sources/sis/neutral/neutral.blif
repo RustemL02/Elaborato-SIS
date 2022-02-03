@@ -1,14 +1,47 @@
 .model NEUTRAL
 
 .inputs  I7 I6 I5 I4 I3 I2 I1 I0
-.outputs O
+.outputs OUT
 
 # Valori costanti.
-.subckt ZRO O=ZRO
-.subckt ONE O=ONE
+.subckt ZRO O=0
+.subckt ONE O=1
 
-.subckt LT8 A7=I7 A6=I6 A5=I5 A4=I4 A3=I3 A2=I2 A1=I1 A0=I0 B7=ZRO B6=ONE B5=ONE B4=ONE B3=ZRO B2=ZRO B1=ZRO B0=ZRO O=LT
-.subckt GT8 A7=I7 A6=I6 A5=I5 A4=I4 A3=I3 A2=I2 A1=I1 A0=I0 B7=ONE B6=ZRO B5=ZRO B4=ZRO B3=ZRO B2=ZRO B1=ZRO B0=ZRO O=GT
+# Determina se il modulo di A è minore del modulo di B,
+# in questo specifico caso controlla se l'ingresso è minore
+# di 0111,0000 cioè 7.
+#
+#          |   Mod. A  |   Mod. B  |
+#          | A7 ... A0 | B7 ... B0 |
+#       |-----------------------------|
+#       |                             |
+#       |             MIN             |
+#       |                             |
+#       |-----------------------------|
+#                      |
+#                      |  MINORE
+#                      v
+#
+.subckt LT8 A7=I7 A6=I6 A5=I5 A4=I4 A3=I3 A2=I2 A1=I1 A0=I0 B7=0 B6=1 B5=1 B4=1 B3=0 B2=0 B1=0 B0=0 O=LT
+
+# Determina se il modulo di A è maggiore del modulo di B,
+# in questo specifico caso controlla se l'ingresso è maggiore
+# di 1000,0000 cioè 8.
+#
+#          |   Mod. A  |   Mod. B  |
+#          | A7 ... A0 | B7 ... B0 |
+#       |-----------------------------|
+#       |                             | 
+#       |             MAG             |
+#       |                             |
+#       |-----------------------------|
+#                      |
+#                      |  MAGGIORE
+#                      v
+#
+.subckt GT8 A7=I7 A6=I6 A5=I5 A4=I4 A3=I3 A2=I2 A1=I1 A0=I0 B7=1 B6=0 B5=0 B4=0 B3=0 B2=0 B1=0 B0=0 O=GT
+
+# 
 .subckt NOR A=LT B=GT O=O
 
 .end

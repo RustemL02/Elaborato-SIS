@@ -1,0 +1,25 @@
+# Calcola la sottrazione tra due bit.
+.model SUB1
+
+# Riceve in ingresso due bit ed un eventuale prestito.
+# Restituisce in uscita il bit di risultato ed
+# un eventuale prestito.
+.inputs  A B BIN
+.outputs O BOUT
+
+# Nodo che produce la sottrazione tra i due bit e il
+# prestito.
+.names A B BIN O
+    001 1
+    010 1
+    100 1
+    111 1
+
+# Nodo che produce il prestito dai due bit e il prestito.
+.names A B BIN BOUT
+    001 1
+    010 1
+    011 1
+    111 1
+
+.end

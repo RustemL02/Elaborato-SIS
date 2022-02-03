@@ -1,0 +1,8 @@
+.model ZRO
+
+.outputs O
+
+.names O
+    0
+
+.end

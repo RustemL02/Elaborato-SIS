@@ -1,0 +1,17 @@
+.model DEMUX8
+
+.inputs  S I7 I6 I5 I4 I3 I2 I1 I0
+.outputs X7 X6 X5 X4 X3 X2 X1 X0 Y7 Y6 Y5 Y4 Y3 Y2 Y1 Y0
+
+.subckt DEMUX1 S=S I=I7 X=X7 Y=Y7
+.subckt DEMUX1 S=S I=I6 X=X6 Y=Y6
+.subckt DEMUX1 S=S I=I5 X=X5 Y=Y5
+.subckt DEMUX1 S=S I=I4 X=X4 Y=Y4
+.subckt DEMUX1 S=S I=I3 X=X3 Y=Y3
+.subckt DEMUX1 S=S I=I2 X=X2 Y=Y2
+.subckt DEMUX1 S=S I=I1 X=X1 Y=Y1
+.subckt DEMUX1 S=S I=I0 X=X0 Y=Y0
+
+.end
+
+.search demux1.blIf

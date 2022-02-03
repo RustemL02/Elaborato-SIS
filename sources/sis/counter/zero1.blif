@@ -1,8 +1,0 @@
-# Costante 0 a 1 bit
-.model ZERO1
-.outputs O
-
-# Nodo che restituisce 0
-.names O
-
-.end

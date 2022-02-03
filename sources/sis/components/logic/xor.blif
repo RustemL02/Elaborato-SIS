@@ -1,0 +1,21 @@
+# Calcola l'xor tra due bit.
+.model XOR
+
+# Riceve in entrata due bit da elaborare.
+# Restituisce l'xor tra i due bit.
+.inputs  A B
+.outputs O
+
+# Tabella di verità
+# AB O
+# 00 0
+# 01 1
+# 10 1
+# 11 0
+
+# Nodo che produce l'xor tra i due bit.
+.names A B O
+    01 1
+    10 1
+
+.end

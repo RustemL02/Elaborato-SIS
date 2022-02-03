@@ -1,0 +1,27 @@
+# Calcola la somma tra due bit.
+.model SUM1
+
+# Riceve in ingresso due bit ed un eventuale riporto.
+# Restituisce in uscita il bit di risultato ed un
+# eventuale riporto.
+.inputs  A B CIN
+.outputs O COUT
+
+# Nodo che produce il riporto.
+.names A B CIN COUT
+    11- 1
+    1-1 1
+    -11 1
+
+# Nodo che produce la somma tra i due bit.
+.names A B S
+    10 1
+    01 1
+
+# Nodo che produce la somma tra i bit e il
+# riporto.
+.names S CIN O
+    10 1
+    01 1
+
+.end

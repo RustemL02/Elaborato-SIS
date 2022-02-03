@@ -1,5 +1,4 @@
-# Questo file blif rappresenta il controllore del
-# circuito, cioè la macchina a stati finiti.
+# Controllore del circuito, cioè la FSM.
 .model FSM
 
 # Gli ingressi ERRORE e CONTROLLO_NEUTRO sono segnali
@@ -32,12 +31,12 @@
 
     # Transizioni da Acido
     0----------0 Acido  Acido   00010000
-    0----------1 Acido  Neutro  100000-1
+    0----------1 Acido  Neutro  10000001
     1----------- Acido  Reset   000010-0
 
     # Transizioni da Basico
     0----------0 Basico Basico  00100010
-    0----------1 Basico Neutro  100000-1
+    0----------1 Basico Neutro  10000011
     1----------- Basico Reset   000010-0
 
     # Transizioni da Neutro

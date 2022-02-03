@@ -1,0 +1,21 @@
+.model SOTTRATTORE
+.inputs A B BIN
+.outputs O BOUT
+
+# Questo blif descrive un sottrattore di 2 bit
+
+# Nodo che sottrae i due bit
+.names A B BIN O
+001 1
+010 1
+100 1
+111 1
+
+# Nodo che calcola il Borrow-OUT
+.names A B BIN BOUT
+001 1
+010 1
+011 1
+111 1
+
+.end

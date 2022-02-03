@@ -1,0 +1,10 @@
+.model REGISTRO
+.inputs A
+.outputs O
+
+# Questo blif descrive un registro a 1 bit
+
+# Latch di tipo rising edge, control(clock) a NIL e init-val a 0
+.latch A O re NIL 0
+
+.end

@@ -1,0 +1,20 @@
+.model NEUTRAL
+
+.inputs  I7 I6 I5 I4 I3 I2 I1 I0
+.outputs O
+
+# Valori costanti.
+.subckt ZRO O=ZRO
+.subckt ONE O=ONE
+
+.subckt LT8 A7=I7 A6=I6 A5=I5 A4=I4 A3=I3 A2=I2 A1=I1 A0=I0 B7=ZRO B6=ONE B5=ONE B4=ONE B3=ZRO B2=ZRO B1=ZRO B0=ZRO O=LT
+.subckt GT8 A7=I7 A6=I6 A5=I5 A4=I4 A3=I3 A2=I2 A1=I1 A0=I0 B7=ONE B6=ZRO B5=ZRO B4=ZRO B3=ZRO B2=ZRO B1=ZRO B0=ZRO O=GT
+.subckt NOR A=LT B=GT O=O
+
+.end
+
+.search zro.blif
+.search one.blif
+.search lt8.blif
+.search gt8.blif
+.search nor.blif

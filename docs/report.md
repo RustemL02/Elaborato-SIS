@@ -1,8 +1,16 @@
 # Progetto FSMD
 
-Progetto di un circuito di tipo *FSMD* che, dato il pH di una soluzione, ne porti il valore alla neutralità.
+## Specifiche
 
-## Interfaccia del circuito
+Si progetti il circuito che controlla un meccanismo chimico il cui scopo è portare una soluzione iniziale a pH noto (acida o basica) ad un pH di neutralità. Il valore del pH viene espresso in valori compresi tra 0 e 14, i valori superiori a 14 comportano un errore.
+
+<!-- Inserisci disegnino prof -->
+
+Per pH acido si intende un valore strettamente inferiore a 7, mentre per pH basico si intende un valore strettamemnte maggiore a 8, tutti i valori compresi tra [7, 8] sono valori di neutralità.
+
+Le due valvole hanno flussi di erogazione differenti, la valvola relativa alla soluzione basica erroga una quantità che permette di alzare di *0.25* il liquido ad ogno ciclo di clock, mentre la valvola ralativa alla soluzioen acida erroga una quantità che permette di alzare di *0.50* il liquido a ogni ciclo di clock.
+
+### Interfaccia del circuito
 
 Ingressi:
 
@@ -45,6 +53,14 @@ Uscite:
 
     Questo segnale rappresenta il numero di cicli impiegati per raggiungere la neutralità, viene **codificato in modulo**.
 
+## Architettura generale del circuito
+
+Il circuito è composto da un **FSM** (controllore) e un **DATA-PATH** (elaboratore) che comunicano tra loro. I file che contengono la rappresentazione in formato `blif` di questi componenti sono `FSM.blif` e `DATA-PATH.blif` essi sono poi collegati per creare la ***FSMD*** che costituisce il nostro circuito finale.
+
+I componenti sono descritti nel dettaglio nelle pagine seguenti analizzando nello specifico anche le scelte progetturali compiute durante la loro creazione.
+
+<!-- Inserisci immagine FSMD -->
+
 ## Finite State Machine (FSM)
 
 Stati della FSM:
@@ -57,8 +73,17 @@ Stati della FSM:
 
 <!-- Inserisci STG -->
 
-<!-- Inserisci STT -->
+## DATA-PATH
 
-## Datapath
+Il DATA-PATH è strutturato in 2 parti:
+
+1. Contatore: effetua il conteggio dei cicli di clock che ci vogliono per completare l'operazione;
+1. Elaboratore: porta il pH a un livello di neutralità oppure stampa l'errore se la codifica inserita non soddisfa i requisiti.
 
 <!-- Inserisci Datapath -->
+
+## Statistiche del circuito
+
+## Numero di gate e ritardo
+
+## La descrizione delle scelte progettuali

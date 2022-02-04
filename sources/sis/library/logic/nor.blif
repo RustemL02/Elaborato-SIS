@@ -1,0 +1,20 @@
+# Calcola la nor tra i due bit A e B.
+.model NOR
+
+# Accetta due input: due bit da elaborare.
+# Risponde con la nor tra i due bit in ingresso.
+.inputs  A B
+.outputs RES
+
+# Tabella di verità
+# AB RES
+# 00 1
+# 01 0
+# 10 0
+# 11 0
+
+# Nodo che produce la nor tra i due bit.
+.names A B RES
+    00 1
+
+.end

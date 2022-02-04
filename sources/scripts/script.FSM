@@ -1,0 +1,6 @@
+state_minimize stamina
+state_assign jedi
+source script.rugged
+source script.rugged
+source script.rugged
+print_stats

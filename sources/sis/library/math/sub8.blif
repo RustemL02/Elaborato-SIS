@@ -1,0 +1,27 @@
+# Calcola la differenza tra due byte A e B.
+# Assume che i due byte siano codificati
+# in modulo.
+.model SUB8
+
+# Accetta tre input: due byte A e B ed un
+# bit di prestito BIN.
+# Risponde con un byte di risultato RES, ed un
+# bit di prestito BOUT.
+.inputs  A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0 BIN
+.outputs RES7 RES6 RES5 RES4 RES3 RES2 RES1 RES0 BOUT
+
+# Schiera di 8 sottrattori da un singolo bit
+# concatenati fra loro per gestire un modulo.
+.subckt SUB1 A=A0 B=B0 BIN=BIN RES=RES0 BOUT=C0
+.subckt SUB1 A=A1 B=B1 BIN=C0  RES=RES1 BOUT=C1
+.subckt SUB1 A=A2 B=B2 BIN=C1  RES=RES2 BOUT=C2
+.subckt SUB1 A=A3 B=B3 BIN=C2  RES=RES3 BOUT=C3
+.subckt SUB1 A=A4 B=B4 BIN=C3  RES=RES4 BOUT=C4
+.subckt SUB1 A=A5 B=B5 BIN=C4  RES=RES5 BOUT=C5
+.subckt SUB1 A=A6 B=B6 BIN=C5  RES=RES6 BOUT=C6
+.subckt SUB1 A=A7 B=B7 BIN=C6  RES=RES7 BOUT=BOUT
+
+.end
+
+# Ricerca del modello SUB1.
+.search SUB1.blif

@@ -1,0 +1,43 @@
+# Contatore da ZERO ad un byte che può essere
+# reimpostato a ZERO oppure bloccato.
+# Il risultato è codificato in modulo.
+.model COUNTER
+
+# Accetta due input: un bit di reset ed un bit di stop.
+# Risponde con un byte rappresentante il conteggio.
+.inputs  RESET STOP
+.outputs RES7 RES6 RES5 RES4 RES3 RES2 RES1 RES0
+
+# Valori costanti.
+.subckt ZERO RES=0
+.subckt ONE  RES=1
+
+# Quando sopraggiunge il segnale di reset,
+# propaga un byte di valore ZERO, altrimenti
+# propaga il byte selezionato dal multiplexer
+# di stop.
+.subckt MUX8 SEL=RESET A7=CNT7 A6=CNT6 A5=CNT5 A4=CNT4 A3=CNT3 A2=CNT2 A1=CNT1 A0=CNT0 B7=0 B6=0 B5=0 B4=0 B3=0 B2=0 B1=0 B0=0 OUT7=RES7 OUT6=RES6 OUT5=RES5 OUT4=RES4 OUT3=RES3 OUT2=RES2 OUT1=RES1 OUT0=RES0
+
+# Questo registro memorizza l'ultimo byte che viene
+# prodotto dal multiplexer. Tale byte viene mostrato
+# in uscita nel ciclo di clock successivo.
+.subckt REG8 A7=RES7 A6=RES6 A5=RES5 A4=RES4 A3=RES3 A2=RES2 A1=RES1 A0=RES0 MEM7=REG7 MEM6=REG6 MEM5=REG5 MEM4=REG4 MEM3=REG3 MEM2=REG2 MEM1=REG1 MEM0=REG0
+
+# Il sommatore legge l'ultimo valore memorizzato dal
+# registro e aggiunge un byte di valore UNO, per poi
+# indirizzare il risultato al multiplexer.
+.subckt SUM8 A7=REG7 A6=REG6 A5=REG5 A4=REG4 A3=REG3 A2=REG2 A1=REG1 A0=REG0 B7=0 B6=0 B5=0 B4=0 B3=0 B2=0 B1=0 B0=1 CIN=0 RES7=SUM7 RES6=SUM6 RES5=SUM5 RES4=SUM4 RES3=SUM3 RES2=SUM2 RES1=SUM1 RES0=SUM0 COUT=COUT
+
+# Questo multiplexer sceglie il byte appena prodotto
+# dal sommatore se il segnale di stop equivale a ZERO,
+# altrimenti propaga il valore del registro così com'è.
+.subckt MUX8 SEL=STOP A7=SUM7 A6=SUM6 A5=SUM5 A4=SUM4 A3=SUM3 A2=SUM2 A1=SUM1 A0=SUM0 B7=REG7 B6=REG6 B5=REG5 B4=REG4 B3=REG3 B2=REG2 B1=REG1 B0=REG0 OUT7=CNT7 OUT6=CNT6 OUT5=CNT5 OUT4=CNT4 OUT3=CNT3 OUT2=CNT2 OUT1=CNT1 OUT0=CNT0
+
+.end
+
+# Ricerca dei modelli ZERO, ONE, MUX8, REG8, SUM8.
+.search zero.blif
+.search one.blif
+.search mux8.blif
+.search reg8.blif
+.search sum8.blif

@@ -1,0 +1,20 @@
+# Calcola l'or tra i due bit A e B.
+.model OR
+
+# Accetta due input: due bit da elaborare.
+# Risponde con l'or tra i due bit in ingresso.
+.inputs  A B
+.outputs RES
+
+# Tabella di verità
+# AB RES
+# 00 0
+# 01 1
+# 10 1
+# 11 1
+
+# Nodo che produce l'or tra i due bit.
+.names A B RES
+    00 0
+
+.end

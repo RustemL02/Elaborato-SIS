@@ -84,6 +84,12 @@ Il DATA-PATH è strutturato in 2 parti:
 
 ## Statistiche del circuito
 
+<!-- Da definire -->
+
 ## Numero di gate e ritardo
 
+<!-- Da definire -->
+
 ## La descrizione delle scelte progettuali
+
+<!-- Da definire -->

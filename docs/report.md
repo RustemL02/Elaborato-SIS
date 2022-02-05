@@ -4,7 +4,7 @@
 
 Si progetti il circuito che controlla un meccanismo chimico il cui scopo è portare una soluzione iniziale a pH noto (acida o basica) ad un pH di neutralità. Il valore del pH viene espresso in valori compresi tra 0 e 14, i valori superiori a 14 comportano un errore.
 
-<!-- Inserisci disegnino prof -->
+![Sistema](img/Sistema.jpg)
 
 Per pH acido si intende un valore strettamente inferiore a 7, mentre per pH basico si intende un valore strettamemnte maggiore a 8, tutti i valori compresi tra [7, 8] sono valori di neutralità.
 

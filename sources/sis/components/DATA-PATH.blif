@@ -1,4 +1,8 @@
-# Calcolatore del circuito, dioè il Datapath.
+# Calcolatore del circuito, dioè il data path.
+# Dato il pH di una soluzione lo porta a neutralità,
+# precisamente nell'intervallo [7, 8].
+# Assume che il pH sia un byte codificato in virgola
+# fissa con 4 bit dedicati alla parte intera.
 .model DATAPATH
 
 # Accetta cinque input: un byte rappresentante il pH

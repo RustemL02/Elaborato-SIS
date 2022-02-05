@@ -1,4 +1,4 @@
-# Contatore da ZERO ad un byte che può essere
+# Contatore da ZERO a 255, che può essere
 # reimpostato a ZERO oppure bloccato.
 # Il risultato è codificato in modulo.
 .model COUNTER

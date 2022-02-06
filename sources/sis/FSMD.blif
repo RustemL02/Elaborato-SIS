@@ -25,5 +25,5 @@
 .end
 
 # Ricerca dei modelli FSM e DATAPATH.
-.search FSM.blif
+.search FSM.min.blif
 .search DATA-PATH.min.blif

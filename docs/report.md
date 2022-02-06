@@ -8,7 +8,7 @@ Si progetti il circuito che controlla un meccanismo chimico il cui scopo è port
 
 Per pH acido si intende un valore strettamente inferiore a 7, mentre per pH basico si intende un valore strettamemnte maggiore a 8, tutti i valori compresi tra [7, 8] sono valori di neutralità.
 
-Le due valvole hanno flussi di erogazione differenti, la valvola relativa alla soluzione basica erroga una quantità che permette di alzare di *0.25* il liquido ad ogno ciclo di clock, mentre la valvola ralativa alla soluzioen acida erroga una quantità che permette di alzare di *0.50* il liquido a ogni ciclo di clock.
+Le due valvole hanno flussi di erogazione differenti, la valvola relativa alla soluzione basica erroga una quantità che permette di alzare di *0.25* il liquido ad ogni ciclo di clock, mentre la valvola ralativa alla soluzione acida erroga una quantità che permette di alzare di *0.50* il liquido a ogni ciclo di clock.
 
 ### Interfaccia del circuito
 
@@ -87,7 +87,7 @@ Il DATA-PATH è strutturato in 2 parti:
 
 Quando si prova il circuito vengono stampati dei warning con su scritto *"does not fanot"* sono le uscite dei componenti interni che non vengono portate in output quindi possono essere ingorati.
 
-Le statistiche del circuito prima dell'otimizzazione per area sono:
+Le statistiche del circuito prima dell'ottimizzazione per area sono:
 <!-- SCREEN STATISTICHE -->
 
 Per minimizzare la **FSM** i comandi da eseguire sono:
@@ -110,7 +110,7 @@ Il numero di gate del circuito è <!-- NUMERO GATE-->.
 
 ## La descrizione delle scelte progettuali
 
-Durante l'impementazione del progetto abbiamo fatto le seguenti scelte progettuali:
+Durante l'implementazione del progetto abbiamo fatto le seguenti scelte progettuali:
 
 1. Per controllare se il pH è acido oppure basico sfruttiamo il bit più significativo se esso è a 0 allora è acido se è a 1 allora è basico, però questo comprenderebbe che anche i valori neutri vengono assegnati a uno dei due tipi. Per risolvere questo problema abbiamo messo un controllore di neutralità nel DATA-PATH in modo tale che il DATA-PATH comunichi alla FSM di cambiare stato da ***Acido*** oppure ***Basico*** a ***Neutro***.
 

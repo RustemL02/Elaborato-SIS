@@ -1,12 +1,24 @@
-# Controllore del circuito, cioè la FSM.
+# Controllore del circuito, cioè la FSM; Dato il pH di una
+# soluzione lo porta a neutralità, precisamente nell'intervallo
+# [7, 8].
+# Assume che il pH sia un byte codificato in virgola fissa con
+# 4 bit dedicati alla parte intera.
 .model FSM
 
-# Accetta cinque
-
-# Gli ingressi ERRORE e CONTROLLO_NEUTRO sono segnali
-# di controllo che sopraggiungono dal Datapath.
-# Le uscite RESET, INIZIO_OPERAZIONE, TIPO_PH e STOP
-# sono segnali di stato che vengono inviati al Datapath.
+# Accetta cinque input: un bit di reset, un bit di start,
+# un byte rappresentante il pH, e due bit di controllo:
+# uno determina se il Data path ha incontrato una codifica
+# inaccettabile e l'altro invece se la codifica indica un pH
+# neutro.
+# Risponde con: un bit il quale indica se l'operazione è
+# stata completata, un bit che comunica l'errore nella
+# codifica del byte ed due bit che indicano quale valvola
+# aprire per modificare il pH.
+# Inoltre invia al Data path quattro segnali di stato:
+# un bit di reset, un bit che indica se l'operazione deve
+# iniziare, un bit che indica il tipo del pH in ingresso ed
+# infine un ultimo bit che impedisce al Data path di proseguire
+# con le operazioni di modifica del pH.
 .inputs  RST START PH7 PH6 PH5 PH4 PH3 PH2 PH1 PH0 ERRORE CONTROLLO_NEUTRO
 .outputs FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO RESET INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
 

@@ -15,7 +15,7 @@
 ## Macchina a stati finiti (FSM)
 
 - [ ] Macchina a stati finiti (FSM)
-- [ ]     Stati
+- [x]     Stati
 - [ ]     Transizioni
 - [ ]     Schema
 

@@ -14,25 +14,22 @@ Se la soluzione iniziale è basica viene aperta la valvola della soluzione acida
 
 Ingressi:
 
-- `RST`: comunica al circuito di tornare allo stato iniziale indipendentemente dal valore degli altri ingressi.
-
-- `START`: indica al circuito di leggere il *pH* in ingresso **in un unico ciclo di clock**.
-
-- `PH [8]`: rappresenta il valore del *pH* iniziale della soluzione.
+| **Nome** | **Descrizione**                                                                                        |
+|---------:|:-------------------------------------------------------------------------------------------------------|
+| `RST`    | Comunica al circuito di tornare allo stato iniziale indipendentemente dal valore degli altri ingressi. |
+| `START`  | Indica al circuito di leggere il *pH* in ingresso **in un unico ciclo di clock**.                      |
+| `PH[8]`  | Rappresenta il valore del *pH* iniziale della soluzione.                                               |
 
 Uscite:
 
-- `FINE_OPERAZIONE`: comunica che la soluzione ha finalmente raggiunto la neutralità.
-
-- `ERRORE_SENSORE`: indica che il sistema ha ricevuto in ingresso un *pH* non valido.
-
-- `VALVOLA_ACIDO`: comunica che il *pH* è basico perciò deve essere acidificato.
-
-- `VALVOLA_BASICO`: comunica che il *pH* è acido perciò deve essere alcalinizzato.
-
-- `PH_FINALE [8]`: rappresenta il valore esatto del *pH* quando il sistema ha terminato.
-
-- `NCLK [8]`: rappresenta il numero di cicli impiegati per raggiungere la neutralità.
+| **Nome**          | **Descrizione**                                                         |
+|------------------:|:------------------------------------------------------------------------|
+| `FINE_OPERAZIONE` | Comunica che la soluzione ha finalmente raggiunto la neutralità.        |
+| `ERRORE_SENSORE`  | Indica che il sistema ha ricevuto in ingresso un *pH* non valido.       |
+| `VALVOLA_ACIDO`   | Comunica che il *pH* è basico perciò deve essere acidificato.           |
+| `VALVOLA_BASICO`  | Comunica che il *pH* è acido perciò deve essere alcalinizzato.          |
+| `PH_FINALE[8]`    | Rappresenta il valore esatto del *pH* quando il sistema ha terminato.   |
+| `NCLK[8]`         | Rappresenta il numero di cicli impiegati per raggiungere la neutralità. |
 
 #### Codifiche
 
@@ -71,13 +68,131 @@ Il collegamento tra i due sottosistemi avviene grazie allo scambio di:
 
 ## Macchina a stati finiti (FSM)
 
-<!-- Stati della FSM:
+Abbiamo individuato cinque stati, cioè:
 
-- `Reset`, stato iniziale del circuito
-- `Errore`, stato raggiunto in caso di *pH* invalido
-- `Acido`, stato raggiunto in caso di *pH* acido
-- `Basico`, stato raggiunto in caso di *pH* basico
-- `Neutro`, stato raggiunto dopo che il *pH* ha raggiunto la neutralità 
+1. `Reset`: stato iniziale, l'elaboratore viene preparato per l'esecuzione.
+2. `Errore`: stato raggiunto nel caso in cui viene inserita una codifica del *pH* incettabile.
+3. `Acido`: stato raggiunto quando il *pH* della soluzione è acido.
+4. `Basico`: stato raggiunto quando il *pH* della soluzione è basico.
+5. `Neutro`: stato raggiunto quando il *pH* della soluzione è neutro.
+
+### Transizioni
+
+Ingressi:
+
+```java
+RST START PH[8] ERRORE NEUTRO
+```
+
+Uscite:
+
+```java
+FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO RESET INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
+```
+
+#### Stato di Reset
+
+##### Ingressi
+
+Quando la macchina riceve in ingresso la combinazione di bit `RST = 0, START = 1` si sposta nello stato di:
+
+- *Errore* se la codifica del *pH* è inaccettabile.
+- *Acido* se il bit più significativo del *pH* è `0`.
+- *Basico* se il bit più significativo del *pH* è `1`.
+
+Viceversa, quando non riceve tale combinazione rimane nello stato di *Reset*.
+
+##### Uscite
+
+Quando la macchina si sposta in uno degli stati tra *Errore*, *Acido* oppure *Basico*, invia all'elaboratore
+il segnale di stato `INIZIO_OPERAZIONE = 1`, con la differenza che:
+
+- *Errore* lancia anche il segnale `ERRORE_SENSORE = 1`.
+- *Acido* lancia i segnali `VALVOLA_BASICO = 1, TIPO_PH = 0`.
+- *Basico* lancia i segnali `VALVOLA_ACIDO = 1, TIPO_PH = 1`.
+
+Invece quando la macchina rimane sullo stato di *Reset* comunica all'elaboratore di reinizializzare i calcoli
+tramite il segnale di stato `RESET = 1`.
+
+| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
+| -------------- | -------------- | -------------- | ---------- |
+| `1-----------` | `Reset`        | `Reset`        | `000010-0` |
+| `00----------` | `Reset`        | `Reset`        | `000010-0` |
+| `01--------1-` | `Reset`        | `Errore`       | `010001-0` |
+| `010-------0-` | `Reset`        | `Acido`        | `00010100` |
+| `011-------0-` | `Reset`        | `Basico`       | `00100110` |
+
+#### Errore
+
+##### Ingressi
+
+La macchina rimane nello stato di *Errore* fintantoché non riceve in input `RST = 1`, allorché si sposta nello stato di *Reset*.
+
+##### Uscite
+
+Nel caso in cui la macchina rimane nello stato di *Errore* lancia il segnale `ERRORE_SENSORE = 1` mentre nel caso in cui si sposta nello stato di *Reset* restituisce il segnale `RESET = 1`.
+
+| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
+| -------------- | -------------- | -------------- | ---------- |
+| `0-----------` | `Errore`       | `Errore`       | `010000-0` |
+| `1-----------` | `Errore`       | `Reset`        | `000010-0` |
+
+#### Acido
+
+##### Ingressi
+
+La macchina rimane allo stato *Acido* fintantochè non si presenta `NEUTRO = 1` oppure `RST = 1`, nel primo caso passa allo stato *Neutro* mentre nel secondo passa allo stato *Reset*.
+
+##### Uscite
+
+Quando la macchina rimane nello stato *Acido* lancia i segnali `VALVOLA_BASICA = 1, TIPO_PH = 0`, mentre se passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
+
+Invece quando la macchina passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
+
+| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
+| -------------- | -------------- | -------------- | ---------- |
+| `0----------0` | `Acido`        | `Acido`        | `00010000` |
+| `0----------1` | `Acido`        | `Neutro`       | `100000-1` |
+| `1-----------` | `Acido`        | `Reset`        | `000010-0` |
+
+#### Basico
+
+##### Ingressi
+
+La macchina rimane allo stato *Basico* fintantochè non si presenta `NEUTRO = 1` oppure `RST = 1`, nel primo caso passa allo stato *Neutro* mentre nel secondo passa allo stato *Reset*.
+
+##### Uscite
+
+Quando la macchina rimane nello stato *Bisico* lancia i segnali di `VALVOLA_ACIDA = 1, TIPO_PH = 1`, mentre se passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
+
+Invece quando la macchina passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
+
+| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
+| -------------- | -------------- | -------------- | ---------- |
+| `0----------0` | `Basico`       | `Basico`       | `00100010` |
+| `0----------1` | `Basico`       | `Neutro`       | `100000-1` |
+| `1-----------` | `Basico`       | `Reset`        | `000010-0` |
+
+#### Neutro
+
+##### Ingressi
+
+La macchina rimane nello stato di *Neutro* fintantoché non riceve in input `RST = 1`, allorché si sposta nello stato di *Reset*.
+
+##### Uscite
+
+Fintantoché si rimane nello stato di *Neutro* le uscite sono `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`, invece se si passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
+
+| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
+| -------------- | -------------- | -------------- | ---------- |
+| `0-----------` | `Neutro`       | `Neutro`       | `100000-1` |
+`1-----------`   | `Neutro`       | `Reset`        | `000010-0` |
+
+### Schema
+
+<!-- SCHEMA FSM-->
+
+<!--
 
 ## Elaboratore (DATA-PATH)
 

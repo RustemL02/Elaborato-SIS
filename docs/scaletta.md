@@ -1,29 +1,27 @@
 # Scaletta
 
-## Specifiche
+## Descrizione
 
-- [ ] Specifiche
-- [ ]     {descrizione}
-- [ ]     Immagine
-- [ ]     Interfaccia
+- [x] Descrizione
+- [x]     Immagine
+- [x]     Interfaccia del circuito
 
 ## Architettura generale
 
-- [ ] Architettura generale
-- [ ]     {descrizione}
+- [x] Architettura generale
 - [ ]     Immagine
-- [ ]     Note sui segnali
+- [x]     Segnali di comunicazione
 
-## Macchina a stati finiti
+## Macchina a stati finiti (FSM)
 
-- [ ] Macchina a stati finiti
+- [ ] Macchina a stati finiti (FSM)
 - [ ]     Stati
 - [ ]     Transizioni
 - [ ]     Schema
 
-## Data path
+## Elaboratore (DATA-PATH)
 
-- [ ] Data path
+- [ ] Elaboratore (DATA-PATH)
 - [ ]     Componenti (per ogni)
 - [ ]         Utilizzo
 - [ ]         Schema

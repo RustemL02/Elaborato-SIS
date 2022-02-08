@@ -16,16 +16,16 @@
 
 - [ ] Macchina a stati finiti (FSM)
 - [x]     Stati
-- [ ]     Transizioni
+- [~]     Transizioni
 - [ ]     Schema
 
 ## Elaboratore (DATA-PATH)
 
-- [ ] Elaboratore (DATA-PATH)
-- [ ]     Componenti (per ogni)
-- [ ]         Utilizzo
-- [ ]         Schema
-- [ ]     Schema
+- [~] Elaboratore (DATA-PATH)
+- [~]     Componenti (per ogni)
+- [~]         Utilizzo
+- [~]         Schema
+- [~]     Schema
 
 ## Alcune simulazioni
 

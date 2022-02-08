@@ -145,7 +145,7 @@ La macchina rimane allo stato *Acido* fintantochè non si presenta `NEUTRO = 1` 
 
 ##### Uscite
 
-Quando la macchina rimane nello stato *Acido* lancia i segnali `VALVOLA_BASICA = 1, TIPO_PH = 0`, mentre se passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
+Quando la macchina rimane nello stato *Acido* lancia i segnali `VALVOLA_BASICA = 1, TIPO_PH = 0`, nel momento in cui passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
 
 Invece quando la macchina passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
 
@@ -163,7 +163,7 @@ La macchina rimane allo stato *Basico* fintantochè non si presenta `NEUTRO = 1`
 
 ##### Uscite
 
-Quando la macchina rimane nello stato *Bisico* lancia i segnali di `VALVOLA_ACIDA = 1, TIPO_PH = 1`, mentre se passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
+Quando la macchina rimane nello stato *Bisico* lancia i segnali di `VALVOLA_ACIDA = 1, TIPO_PH = 1`, nel momento in cui passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
 
 Invece quando la macchina passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
 
@@ -192,16 +192,118 @@ Fintantoché si rimane nello stato di *Neutro* le uscite sono `FINE_OPERAZIONE =
 
 <!-- SCHEMA FSM-->
 
-<!--
-
 ## Elaboratore (DATA-PATH)
 
 Il DATA-PATH è strutturato in 2 parti:
 
-1. Contatore: effetua il conteggio dei cicli di clock che ci vogliono per completare l'operazione;
-1. Elaboratore: porta il *pH* a un livello di neutralità oppure stampa l'errore se la codifica inserita non soddisfa i requisiti.
+1. *Contatore*: effetua il conteggio dei cicli di clock che servono per completare l'operazione;
 
-<!-- Inserisci Datapath -D->
+1. *Elaboratore*: porta il *pH* a un livello di neutralità oppure stampa l'errore se la codifica inserita non soddisfa i requisiti.
+
+### Contatore
+
+#### Struttura
+
+Il contatore è costituito da:
+
+- `1` Registro a 8 bit.
+
+- `3` Multiplexer a 2 ingressi da 8 bit.
+
+- `1` Sommatore a 8 bit.
+
+#### Utilizzo
+
+Il sommatore inizia il conto una volta preso in input il *pH*, e si riazzera ogni volta che `RESET = 1`. Dopo essere stato preso in input il *pH* viene salvato nel registro la cui uscita è collegata a un sommatore che incrementa il valore di `1` e un multiplexer che in base al segnale di `STOP_OPERAZIONE` decide se prendere il valore aggiornato oppure quello uscito dal registro.
+
+L'uscita del contatore è collocata fra il primo multiplexer che riazzera i valori e l'ingresso del registro; essa è filtrata da un multiplexer che in base al segnale di `STOP_OPERAZIONE` sceglie se stampare il valore ottenuto dal conteggio (`NCLK`) oppure `0`.
+
+![Counter](./img/Counter.jpg)
+
+### Elaboratore
+
+L'elaboratore è suddiviso a sua volta in quattro parti:
+
+  1. Main.
+  2. Error.
+  3. Modifier.
+  4. Neutral.
+
+#### Error
+
+Error è costituito da `1` Maggiore a 8 bit.
+
+Prende in input il valore del *pH* inserito dall'utente e controlla se esso è maggiore di `14`, se si allora stampa `1` altrimenti `0`.
+
+![Error](./img/Error.jpg)
+
+#### Modifier
+
+Modifier è composto da:
+
+- `1` Sommatore a 8 bit.
+
+- `1` Sottrattore a 8 bit.
+
+- `1` Multiplexer a 2 ingressi da 8 bit.
+
+Prende in input il valore del registro, somma ad esso *0.50* e sottrae *0.25*, dopodiché in base al *pH* sceglie quale valore prendere e portare in uscita.
+
+![Modifier](./img/Modifier.jpg)
+
+#### Neutral
+
+Neutral è composto da:
+
+- `1` Minore da 8 bit.
+
+- `1` Maggiore da 8 bit.
+
+- `1` NOR a 2 inressi da 1 bit.
+
+Prende in input il valore del multiplexer che seleziona fra il risultato del modifier e il registro, dopodiché controlla se esso è compreso nell'intervallo `[7, 8]`, se lo è allora restituisce 1 sennò restituisce `0`.
+
+![Neutral](./img/Neutral.jpg)
+
+#### Main
+
+Il Main è l'unione di tutti gli altri componenti con l'aggiunta di:
+
+- `2` Registro a 8 bit.
+
+- `4` Multiplexer a 2 ingressi a 8 bit.
+
+Il circuito prende in input il valore del *pH* solo quando abbiamo la combinazione `START_OPERAZIONE = 1` e `RESET = 0`, mentre se abbiamo `INIZIO_OPERAZIONE = 0` e `RESET = 0` prende il valore risultante dal multiplexer che seleziona fra il valore del registro e il risultato del Modifier, se invece abbiamo `RESET = 1` il circuito si resetta.
+
+L'uscita del circuito è collocata tra l'uscita del multiplexer del reset e l'ingresso del registro, essa è filtrata da un multiplexer che in base al valore di `STOP_OPERAZIONE` se vale `0` l'uscita è `0`, invece se vale `1` l'uscita è quella del multiplexer del reset.
+
+![DATA-PATH](./img/DATA-PATH.jpg)
+
+
+
+
+
+
+
+
+
+
+
+<!-- SCHEMA NEUTRAL -->
+
+<!--
+
+
+
+
+
+
+
+
+
+
+
+<!-- Inserisci Datapath --S>
 
 ## Statistiche del circuito
 

@@ -233,7 +233,7 @@ L'elaboratore è suddiviso a sua volta in quattro parti:
 
 Error è costituito da `1` Maggiore a 8 bit.
 
-Prende in input il valore del *pH* inserito dall'utente e controlla se esso è maggiore di `14`, se si allora stampa `1` altrimenti `0`.
+Prende in input il valore del *pH* inserito dall'utente e controlla se esso è maggiore di `14`, se si l'uscita `ERRORE = 1` altrimenti `ERRORE = 0`.
 
 ![Error](./img/Error.jpg)
 
@@ -247,7 +247,7 @@ Modifier è composto da:
 
 - `1` Multiplexer a 2 ingressi da 8 bit.
 
-Prende in input il valore del registro, somma ad esso *0.50* e sottrae *0.25*, dopodiché in base al *pH* sceglie quale valore prendere e portare in uscita.
+Prende in input il valore del registro, somma ad esso *0.50* e sottrae *0.25*, dopodiché in base al `TIPO_PH` sceglie quale valore prendere e portare in uscita.
 
 ![Modifier](./img/Modifier.jpg)
 
@@ -261,53 +261,38 @@ Neutral è composto da:
 
 - `1` NOR a 2 inressi da 1 bit.
 
-Prende in input il valore del multiplexer che seleziona fra il risultato del modifier e il registro, dopodiché controlla se esso è compreso nell'intervallo `[7, 8]`, se lo è allora restituisce 1 sennò restituisce `0`.
+Prende in input il valore del multiplexer che seleziona tra il risultato del modifier e il valore del registro, dopodiché controlla se esso è compreso nell'intervallo `[7, 8]`, se lo è allora restituisce `NEUTRO = 1` sennò restituisce `NEUTRO = 0`.
 
 ![Neutral](./img/Neutral.jpg)
 
 #### Main
 
-Il Main è l'unione di tutti gli altri componenti con l'aggiunta di:
+Il Main è il copro principale del DATA-PATH che permette di collegare gli altri componenti con l'aggiunta di:
 
-- `2` Registro a 8 bit.
+- `2` Registri a 8 bit.
 
 - `4` Multiplexer a 2 ingressi a 8 bit.
 
-Il circuito prende in input il valore del *pH* solo quando abbiamo la combinazione `START_OPERAZIONE = 1` e `RESET = 0`, mentre se abbiamo `INIZIO_OPERAZIONE = 0` e `RESET = 0` prende il valore risultante dal multiplexer che seleziona fra il valore del registro e il risultato del Modifier, se invece abbiamo `RESET = 1` il circuito si resetta.
+Il circuito prende in input il valore del *pH* solo quando abbiamo la combinazione `INIZIO_OPERAZIONE = 1` e `RESET = 0`, mentre se abbiamo `INIZIO_OPERAZIONE = 0` e `RESET = 0` prende il valore risultante dal multiplexer che seleziona fra il valore del registro e il risultato del Modifier, se invece abbiamo `RESET = 1` il circuito si resetta. Dopo aver preso il valore in input e averlo salvato in un registro, il circuito lo passa al modifier che in base al `TIPO_PH` sceglie se prendere il risultato della somma oppure quello della sottrazione, dopodiché il risultato viene filtrato da un multiplexer che in base a `STOP_OPERAZIONE` sceglie se tenere il valore del registo oppure aggiornarlo. L'uscita del multiplexer si dirama per andare dal Neutral che effettua il controllo e restituisce `CONTROLLO_NEUTRO` mentre l'altra diramazione entra nel multiplexer di `INIZIO_OPERAZIONE`.
 
 L'uscita del circuito è collocata tra l'uscita del multiplexer del reset e l'ingresso del registro, essa è filtrata da un multiplexer che in base al valore di `STOP_OPERAZIONE` se vale `0` l'uscita è `0`, invece se vale `1` l'uscita è quella del multiplexer del reset.
 
 ![DATA-PATH](./img/DATA-PATH.jpg)
 
-
-
-
-
-
-
-
-
-
-
-<!-- SCHEMA NEUTRAL -->
-
-<!--
-
-
-
-
-
-
-
-
-
-
-
-<!-- Inserisci Datapath --S>
-
 ## Statistiche del circuito
 
-Quando si prova il circuito vengono stampati dei warning con su scritto *"does not fanot"* sono le uscite dei componenti interni che non vengono portate in output quindi possono essere ingorati, essi spariranno dopo l'ottimizzazione della ***FSMD***.
+Le statistiche del circuito prima dell'ottimizzazione per area sono:
+
+```js
+
+```
+
+Le statistiche dell'FSMD dopo l'ottimizzazione sono:
+
+```js
+FSMD            pi=10   po=20   nodes= 55       latches=20
+lits(sop)= 295
+```
 
 Le statistiche del circuito prima dell'ottimizzazione per area sono:
 <!-- SCREEN STATISTICHE -S->
@@ -337,5 +322,7 @@ Durante l'implementazione del progetto abbiamo fatto le seguenti scelte progettu
 1. Se l'utente dallo stato di ***Errore*** oppure ***Neutro*** non inserisce **RST** a *1* la FSM rimane sullo stato in cui si trova.
 
 1. Per semplificare la scrittura e la lettura dei componenti in formato `blif` abbiamo suddiviso il DATA-PATH in più pezzi (`error.blif`, `modifier.blif`, `neutral.blif`, `counter.blif`) che poi abbiamo unito utilizzando i `subckt` e i `search`.
+
+1. Abbiamo aggiunto un registro per TIPO_PH essendo che senza di esso si andrebbe a creare un ciclo.
 
 -->

@@ -267,7 +267,7 @@ Prende in input il valore del multiplexer che seleziona tra il risultato del mod
 
 #### Main
 
-Il Main è il copro principale del DATA-PATH che permette di collegare gli altri componenti con l'aggiunta di:
+Il Main è il corpo principale del DATA-PATH che permette di collegare gli altri componenti con l'aggiunta di:
 
 - `2` Registri a 8 bit.
 

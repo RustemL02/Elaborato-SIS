@@ -88,108 +88,38 @@ I segnali utilizzati per le transizioni della macchina sono:
 |                    | `TIPO_PH`           |
 |                    | `STOP_OPERAZIONE`   |
 
-<!--
-#### Stato di Reset
+Di seguito il codice sorgente della tabella delle transizioni descritta nel formato utilizzato da **SIS**.
 
-##### Ingressi
+```sh
+# Transizioni da Reset
+1----------- Reset  Reset   000010-0
+00---------- Reset  Reset   000010-0
+01--------1- Reset  Errore  010001-0
+010-------0- Reset  Acido   00010100
+011-------0- Reset  Basico  00100110
 
-Quando la macchina riceve in ingresso la combinazione di bit `RST = 0, START = 1` si sposta nello stato di:
+# Transizione da Errore
+0----------- Errore Errore  010000-1
+1----------- Errore Reset   000010-0
 
-- *Errore* se la codifica del *pH* è inaccettabile.
-- *Acido* se il bit più significativo del *pH* è `0`.
-- *Basico* se il bit più significativo del *pH* è `1`.
+# Transizioni da Acido
+0----------0 Acido  Acido   00010000
+0----------1 Acido  Neutro  10000001
+1----------- Acido  Reset   000010-0
 
-Viceversa, quando non riceve tale combinazione rimane nello stato di *Reset*.
+# Transizioni da Basico
+0----------0 Basico Basico  00100010
+0----------1 Basico Neutro  10000011
+1----------- Basico Reset   000010-0
 
-##### Uscite
-
-Quando la macchina si sposta in uno degli stati tra *Errore*, *Acido* oppure *Basico*, invia all'elaboratore
-il segnale di stato `INIZIO_OPERAZIONE = 1`, con la differenza che:
-
-- *Errore* lancia anche il segnale `ERRORE_SENSORE = 1`.
-- *Acido* lancia i segnali `VALVOLA_BASICO = 1, TIPO_PH = 0`.
-- *Basico* lancia i segnali `VALVOLA_ACIDO = 1, TIPO_PH = 1`.
-
-Invece quando la macchina rimane sullo stato di *Reset* comunica all'elaboratore di reinizializzare i calcoli
-tramite il segnale di stato `RESET = 1`.
-
-| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
-| -------------- | -------------- | -------------- | ---------- |
-| `1-----------` | `Reset`        | `Reset`        | `000010-0` |
-| `00----------` | `Reset`        | `Reset`        | `000010-0` |
-| `01--------1-` | `Reset`        | `Errore`       | `010001-0` |
-| `010-------0-` | `Reset`        | `Acido`        | `00010100` |
-| `011-------0-` | `Reset`        | `Basico`       | `00100110` |
-
-#### Errore
-
-##### Ingressi
-
-La macchina rimane nello stato di *Errore* fintantoché non riceve in input `RST = 1`, allorché si sposta nello stato di *Reset*.
-
-##### Uscite
-
-Nel caso in cui la macchina rimane nello stato di *Errore* lancia il segnale `ERRORE_SENSORE = 1` mentre nel caso in cui si sposta nello stato di *Reset* restituisce il segnale `RESET = 1`.
-
-| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
-| -------------- | -------------- | -------------- | ---------- |
-| `0-----------` | `Errore`       | `Errore`       | `010000-0` |
-| `1-----------` | `Errore`       | `Reset`        | `000010-0` |
-
-#### Acido
-
-##### Ingressi
-
-La macchina rimane allo stato *Acido* fintantochè non si presenta `NEUTRO = 1` oppure `RST = 1`, nel primo caso passa allo stato *Neutro* mentre nel secondo passa allo stato *Reset*.
-
-##### Uscite
-
-Quando la macchina rimane nello stato *Acido* lancia i segnali `VALVOLA_BASICA = 1, TIPO_PH = 0`, nel momento in cui passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
-
-Invece quando la macchina passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
-
-| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
-| -------------- | -------------- | -------------- | ---------- |
-| `0----------0` | `Acido`        | `Acido`        | `00010000` |
-| `0----------1` | `Acido`        | `Neutro`       | `100000-1` |
-| `1-----------` | `Acido`        | `Reset`        | `000010-0` |
-
-#### Basico
-
-##### Ingressi
-
-La macchina rimane allo stato *Basico* fintantochè non si presenta `NEUTRO = 1` oppure `RST = 1`, nel primo caso passa allo stato *Neutro* mentre nel secondo passa allo stato *Reset*.
-
-##### Uscite
-
-Quando la macchina rimane nello stato *Bisico* lancia i segnali di `VALVOLA_ACIDA = 1, TIPO_PH = 1`, nel momento in cui passa allo stato di *Neutro* lancia i segnali di `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`.
-
-Invece quando la macchina passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
-
-| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
-| -------------- | -------------- | -------------- | ---------- |
-| `0----------0` | `Basico`       | `Basico`       | `00100010` |
-| `0----------1` | `Basico`       | `Neutro`       | `100000-1` |
-| `1-----------` | `Basico`       | `Reset`        | `000010-0` |
-
-#### Neutro
-
-##### Ingressi
-
-La macchina rimane nello stato di *Neutro* fintantoché non riceve in input `RST = 1`, allorché si sposta nello stato di *Reset*.
-
-##### Uscite
-
-Fintantoché si rimane nello stato di *Neutro* le uscite sono `FINE_OPERAZIONE = 1, STOP_OPERAZIONE = 1`, invece se si passa allo stato di *Reset* restituisce il segnale `RESET = 1`.
-
-| Ingressi       | Stato corrente | Stato prossimo | Uscite     |
-| -------------- | -------------- | -------------- | ---------- |
-| `0-----------` | `Neutro`       | `Neutro`       | `100000-1` |
-`1-----------`   | `Neutro`       | `Reset`        | `000010-0` |
+# Transizioni da Neutro
+0----------- Neutro Neutro  100000-1
+1----------- Neutro Reset   000010-0
+```
 
 ### Schema
 
-<!-- SCHEMA FSM -D->
+![FSM](./img/FSM.jpg)
 
 ## Elaboratore (DATA-PATH)
 

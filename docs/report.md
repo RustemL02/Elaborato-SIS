@@ -1,66 +1,62 @@
-# Progetto FSMD
+# Circuito FSM + D
 
-## Descrizione
+Abbiamo sviluppato un circuito che controlla un meccanismo chimico, il cui scopo è portare una soluzione con un pH iniziale noto ad un valore di neutralità.
 
-Si progetti il circuito che controlla un meccanismo chimico il cui scopo è portare una soluzione iniziale a *pH* noto (acida o basica) ad un *pH* di neutralità. Il valore del *pH* viene espresso in valori compresi tra 0 e 14, i valori superiori comportano un errore.
+## Traccia
 
-![Sistema](img/Sistema.jpg)
+Il valore del pH viene espresso in valori compresi tra `0.00` e `14.0`: nell'intervallo `[0.00, 7.00)` si trovano i valori acidi, mentre in quello `(8.00, 14.0]` si trovano i valori basici, infine i valori compresi in `[7.00, 8.00]` sono considerati neutrali. Tutti gli altri valori non sono accettabili e comportano un errore.
 
-Per *pH* acido si intende un valore strettamente inferiore a 7, mentre per *pH* basico si intende un valore strettamente superiore a 8, tutti i valori compresi tra [7, 8] sono valori di neutralità.
+Il sistema è quindi dotato di due valvole: la prima può *decrementare* il valore del pH di `0.25` in un singolo ciclo di clock, mentre la seconda lo può *incrementare* di `0.50` nello stesso periodo di tempo.
 
-Se la soluzione iniziale è basica viene aperta la valvola della soluzione acida che diminuisce il valore del *pH* di *0.25* ad ogni ciclo di clock, mentre se è acida viene aperta la valvola della soluzione basica che aumenta il valore del *pH* di *0.50* ad ogni ciclo di clock.
+![Sistema](img/Sistema.jpg){ width=65% }
 
 ### Interfaccia del circuito
 
-Ingressi:
+Il circuito accetta i seguenti segnali di ingresso:
 
-| **Nome** | **Descrizione**                                                                                        |
-|---------:|:-------------------------------------------------------------------------------------------------------|
-| `RST`    | Comunica al circuito di tornare allo stato iniziale indipendentemente dal valore degli altri ingressi. |
-| `START`  | Indica al circuito di leggere il *pH* in ingresso **in un unico ciclo di clock**.                      |
-| `PH[8]`  | Rappresenta il valore del *pH* iniziale della soluzione.                                               |
+| **Ingresso**          | **Descrizione**                                                                         |
+| --------------------: | :-------------------------------------------------------------------------------------- |
+| `RST`                 | Ordina al circuito di tornare allo stato iniziale. Prevale su qualsiasi altro ingresso. |
+| `START`               | Ordina al circuito di leggere il valore presente nell'ingresso `PH[8]`.                 |
+| `PH[8]`               | Rappresentazione del valore iniziale assunto dal pH della soluzione.                    |
 
-Uscite:
+L'ingresso `PH[8]` è un byte codificato in **virgola fissa** con 4 bit dedicati alla parte intera.
 
-| **Nome**          | **Descrizione**                                                         |
-|------------------:|:------------------------------------------------------------------------|
-| `FINE_OPERAZIONE` | Comunica che la soluzione ha finalmente raggiunto la neutralità.        |
-| `ERRORE_SENSORE`  | Indica che il sistema ha ricevuto in ingresso un *pH* non valido.       |
-| `VALVOLA_ACIDO`   | Comunica che il *pH* è basico perciò deve essere acidificato.           |
-| `VALVOLA_BASICO`  | Comunica che il *pH* è acido perciò deve essere alcalinizzato.          |
-| `PH_FINALE[8]`    | Rappresenta il valore esatto del *pH* quando il sistema ha terminato.   |
-| `NCLK[8]`         | Rappresenta il numero di cicli impiegati per raggiungere la neutralità. |
+Il circuito produce i seguenti segnali di uscita:
 
-#### Codifiche
+| **Uscita**            | **Descrizione**                                                                         |
+| --------------------: | :-------------------------------------------------------------------------------------- |
+| `FINE_OPER.`          | Indica che il sistema ha completato le operazioni. Ovvero il pH è neutro.               |
+| `ERRORE_SENSORE`      | Indica che il sistema ha ricevuto in ingresso un valore di pH non accettabile.          |
+| `VALVOLA_ACIDO`       | Richiede l'apertura della valvola che decrementa il valore del pH.                      |
+| `VALVOLA_BASICO`      | Richiede l'apertura della valvola che incrementa il valore del pH.                      |
+| `PH_FINALE[8]`        | Rappresentazione del valore finale assunto dal pH della soluzione.                      |
+| `NCLK[8]`             | Rappresentazione del numero di cicli utilizzati per completare le operazioni.           |
 
-I byte rappresentanti `PH` e `PH_FINALE` sono espressi in codifica a virgola fissa con 4 bit dedicati alla parte intera; mentre il byte `NCLK` viene espresso in modulo.
+L'uscita `PH_FINALE[8]` è un byte codificato esattamente come l'ingresso `PH[8]`, mentre il byte `NCLK[8]` viene codificato in **modulo**.
 
-## Architettura generale del circuito
+---
 
-Il sistema implementa il modello ***FSMD***, cioè collega una macchina a stati finiti (**FSM**) con un'unità di elaborazione (**DATA-PATH**).
+## Architettura generale
+
+Il sistema implementa il modello ***FSMD***, cioè collega una *macchina a stati finiti* (detta `FSM`) con un'*unità di elaborazione* (chiamata `Data path`). Il compito della macchina a stati è quello di contestualizzare i calcoli eseguiti dall'elaboratore, viceversa quest'ultimo ha il ruolo di aiutare la macchina a determinare in che stato transitare.
 
 <!-- Immagine da sistmare i collegamenti tra FSM e DATA-PATH -->
 
-### Segnali di comunicazione
+### Segnali interni
 
-Il compito della macchina a stati è quello di guidare l'elaboratore verso operazioni contestuali, mentre quest'ultimo fornisce risultati utili a determinare in che stato evolve il sistema.
+Il collegamento tra i due sottosistemi avviene grazie allo scambio di segnali di stato e controllo; i primi vengono emessi dalla macchina a stati verso l'elaboratore, i secondi seguono il percorso inverso.
 
-Il collegamento tra i due sottosistemi avviene grazie allo scambio di:
+I segnali di stato utilizzati sono i seguenti:
 
-- segnali di stato, emessi dalla macchina a stati;
-- segnali di controllo, emessi dall'elaboratore.
+| **Segnale**           | **Descrizione**                                                                         |
+| --------------------: | :-------------------------------------------------------------------------------------- |
+| `RESET`               | Ordina all'elaboratore di reinizializzare i valori.                                     |
+| `INIZIO_OPER.`        |  Comunica all'elaboratore che è appena stato inserito un pH.                            |
+| `TIPO_PH`             | Permette all'elaboratore di determinare come modificare il pH.                          |
+| `STOP_OPER.`          | Comunica all'elaboratore di non modificare i valori memorizzati.                        |
 
-#### Segnali di stato
-
-- `RESET`: la macchina a stati torna allo stato iniziale.
-- `INIZIO_OPERAZIONE`: la macchina a stati avvia l'elaborazione.
-
-- `TIPO_PH`:
-  - `0` se acido.
-  - `1` se basico.
-
-- `STOP_OPERAZIONE`: il *pH* non deve essere modificato.
-
+<!--
 #### Segnali di controllo
 
 - `ERRORE`: la codifica del *pH* non è valida.
@@ -190,7 +186,7 @@ Fintantoché si rimane nello stato di *Neutro* le uscite sono `FINE_OPERAZIONE =
 
 ### Schema
 
-<!-- SCHEMA FSM-->
+<!-- SCHEMA FSM -D->
 
 ## Elaboratore (DATA-PATH)
 

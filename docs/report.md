@@ -35,11 +35,11 @@ Il circuito produce i seguenti segnali di uscita:
 
 L'uscita `PH_FINALE[8]` è un byte codificato esattamente come l'ingresso `PH[8]`, mentre il byte `NCLK[8]` viene codificato in **modulo**.
 
----
-
 ## Architettura generale
 
-Il sistema implementa il modello ***FSMD***, cioè collega una *macchina a stati finiti* (detta `FSM`) con un'*unità di elaborazione* (chiamata `Data path`). Il compito della macchina a stati è quello di contestualizzare i calcoli eseguiti dall'elaboratore, viceversa quest'ultimo ha il ruolo di aiutare la macchina a determinare in che stato transitare.
+Il sistema implementa il modello ***FSMD***, cioè collega una *macchina a stati finiti* (detta `FSM`) con un'*unità di elaborazione* (chiamata `Data path`).
+
+Il compito della macchina a stati è quello di contestualizzare i calcoli eseguiti dall'elaboratore, viceversa quest'ultimo ha il ruolo di aiutare la macchina a determinare in che stato transitare.
 
 <!-- Immagine da sistmare i collegamenti tra FSM e DATA-PATH -->
 
@@ -63,8 +63,6 @@ I segnali di controllo utilizzati sono i seguenti:
 | `ERRORE`              | Comunica alla macchina che il valore del pH non è accettabile.                          |
 | `NEUTRO`              | Comunica alla macchina che il valore del pH ha raggiunto la neutralità.                 |
 
----
-
 ## Macchina a stati finiti (FSM)
 
 Abbiamo individuato cinque stati, cioè:
@@ -76,6 +74,8 @@ Abbiamo individuato cinque stati, cioè:
 5. `Neutro`: il valore del pH ha raggiunto un valore compreso in `[7.00, 8.00]`.
 
 ### Transizioni
+
+I segnali utilizzati per le transizioni della macchina sono:
 
 | **Ingressi**       | **Uscite**          |
 | -----------------: | :------------------ |

@@ -52,40 +52,43 @@ I segnali di stato utilizzati sono i seguenti:
 | **Segnale**           | **Descrizione**                                                                         |
 | --------------------: | :-------------------------------------------------------------------------------------- |
 | `RESET`               | Ordina all'elaboratore di reinizializzare i valori.                                     |
-| `INIZIO_OPER.`        |  Comunica all'elaboratore che è appena stato inserito un pH.                            |
+| `INIZIO_OPER.`        | Comunica all'elaboratore che è appena stato inserito un pH.                             |
 | `TIPO_PH`             | Permette all'elaboratore di determinare come modificare il pH.                          |
 | `STOP_OPER.`          | Comunica all'elaboratore di non modificare i valori memorizzati.                        |
 
-<!--
-#### Segnali di controllo
+I segnali di controllo utilizzati sono i seguenti:
 
-- `ERRORE`: la codifica del *pH* non è valida.
-- `NEUTRO`: determina se il *pH* ha raggiunto la neutralità.
+| **Segnale**           | **Descrizione**                                                                         |
+| --------------------: | :-------------------------------------------------------------------------------------- |
+| `ERRORE`              | Comunica alla macchina che il valore del pH non è accettabile.                          |
+| `NEUTRO`              | Comunica alla macchina che il valore del pH ha raggiunto la neutralità.                 |
+
+---
 
 ## Macchina a stati finiti (FSM)
 
 Abbiamo individuato cinque stati, cioè:
 
-1. `Reset`: stato iniziale, l'elaboratore viene preparato per l'esecuzione.
-2. `Errore`: stato raggiunto nel caso in cui viene inserita una codifica del *pH* incettabile.
-3. `Acido`: stato raggiunto quando il *pH* della soluzione è acido.
-4. `Basico`: stato raggiunto quando il *pH* della soluzione è basico.
-5. `Neutro`: stato raggiunto quando il *pH* della soluzione è neutro.
+1. `Reset`: stato iniziale, in cui l'elaboratore viene inizializzato.
+2. `Errore`: il valore del pH appena inserito non è valido.
+3. `Acido`: il valore del pH è inferiore a `7.00`.
+4. `Basico`: il valore del pH è superiore a `8.00`.
+5. `Neutro`: il valore del pH ha raggiunto un valore compreso in `[7.00, 8.00]`.
 
 ### Transizioni
 
-Ingressi:
+| **Ingressi**       | **Uscite**          |
+| -----------------: | :------------------ |
+| `RST`              | `FINE_OPERAZIONE`   |
+| `START`            | `ERRORE_SENSORE`    |
+| `PH[8]`            | `VALVOLA_ACIDO`     |
+| `ERRORE`           | `VALVOLA_BASICO`    |
+| `NEUTRO`           | `RESET`             |
+|                    | `INIZIO_OPERAZIONE` |
+|                    | `TIPO_PH`           |
+|                    | `STOP_OPERAZIONE`   |
 
-```java
-RST START PH[8] ERRORE NEUTRO
-```
-
-Uscite:
-
-```java
-FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO RESET INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
-```
-
+<!--
 #### Stato di Reset
 
 ##### Ingressi

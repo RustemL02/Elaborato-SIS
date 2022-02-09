@@ -10,7 +10,7 @@
 
 - [x] Architettura generale
 - [ ]     Immagine
-- [x]     Segnali di comunicazione
+- [x]     Segnali interni
 
 ## Macchina a stati finiti (FSM)
 

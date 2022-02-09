@@ -157,3 +157,71 @@ Confronta il valore del pH, se questo supera il `14`, allora restituisce `1`, ci
 Il componente utilizza un maggiore ed un minore ad 8 bit; nonché una porta NOR ad un bit.
 
 Confronta il valore del pH, se questo è compreso in `[7.00, 8.00]` allora restituisce `1`, cioè *vero*.
+
+## Alcune simulazioni
+
+<!-- SIMULAZIONI -->
+
+## Statistiche
+
+### Prima dell'ottimizzazione
+
+Le statistiche del circuito prima dell'ottimizzazione per area sono:
+
+```sh
+FSMD            pi=10   po=20   nodes=174       latches=17
+lits(sop)= 881
+```
+
+Dove:
+
+- `pi` è il numero degli input.
+- `po` è il numero degli output.
+- `nodes` è il numero di nodi.
+- `latches` è il numero di registri.
+- `lits(sop)` è il numero dei letterali.
+
+### Dopo l'ottimizzazione
+
+Gli stati dopo l'ottimizzazione della macchina sono rimasti `5`.
+
+Le statistiche del circuito dopo l'ottimizzazione per area sono:
+
+```sh
+FSMD            pi=10   po=20   nodes= 55       latches=20
+lits(sop)= 295
+```
+
+## Mappatura tecnologica
+
+Dopo l'otimizzazione del circuito si deve eseguire la mappatura tecnologica che consiste nell'associare a ogni componente la sua rappresentazione reale.
+
+Il circuito mappato ha le seguenti statistiche:
+
+```sh
+>>> before removing serial inverters <<<
+# of outputs:          40
+total gate area:       6480.00
+maximum arrival time: (37.00,37.00)
+maximum po slack:     (-11.40,-11.40)
+minimum po slack:     (-37.00,-37.00)
+total neg slack:      (-986.20,-986.20)
+# of failing outputs:  40
+>>> before removing parallel inverters <<<
+# of outputs:          40
+total gate area:       6384.00
+maximum arrival time: (35.80,35.80)
+maximum po slack:     (-11.40,-11.40)
+minimum po slack:     (-35.80,-35.80)
+total neg slack:      (-971.80,-971.80)
+# of failing outputs:  40
+# of outputs:          40
+total gate area:       5968.00
+maximum arrival time: (35.60,35.60)
+maximum po slack:     (-11.40,-11.40)
+minimum po slack:     (-35.60,-35.60)
+total neg slack:      (-957.60,-957.60)
+# of failing outputs:  40
+```
+
+Il **total gate area (area)** è `5968.00` mentre l'**arrival time (cammino critico)** è `35.60`.

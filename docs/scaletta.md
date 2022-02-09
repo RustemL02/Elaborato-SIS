@@ -14,18 +14,17 @@
 
 ## Macchina a stati finiti (FSM)
 
-- [ ] Macchina a stati finiti (FSM)
+- [x] Macchina a stati finiti (FSM)
 - [x]     Stati
-- [~]     Transizioni
-- [ ]     Schema
+- [x]     Transizioni
+- [x]     Schema
 
 ## Elaboratore (DATA-PATH)
 
-- [~] Elaboratore (DATA-PATH)
-- [~]     Componenti (per ogni)
-- [~]         Utilizzo
-- [~]         Schema
-- [~]     Schema
+- [ ] Elaboratore (DATA-PATH)
+- [x]     Componenti (per ogni)
+    - [ ]     Schema
+- [ ]     Schema
 
 ## Alcune simulazioni
 
@@ -33,11 +32,11 @@
 
 ## Statistiche
 
-- [ ] Statistiche
+- [x] Statistiche
 
 ## Mappatura tecnologica
 
-- [ ] Mappatura tecnologica
+- [x] Mappatura tecnologica
 
 ## Scelte progettuali
 

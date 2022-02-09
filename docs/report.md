@@ -65,12 +65,12 @@ I segnali di controllo utilizzati sono i seguenti:
 
 ## Macchina a stati finiti (FSM)
 
-Abbiamo individuato cinque stati, cioè:
+Abbiamo individuato cinque stati per la macchina, cioè:
 
-1. `Reset`: stato iniziale, in cui l'elaboratore viene inizializzato.
-2. `Errore`: il valore del pH appena inserito non è valido.
-3. `Acido`: il valore del pH è inferiore a `7.00`.
-4. `Basico`: il valore del pH è superiore a `8.00`.
+1. `Reset`: stato iniziale, in cui l'elaboratore viene inizializzato;
+2. `Errore`: il valore del pH appena inserito non è valido;
+3. `Acido`: il valore del pH è inferiore a `7.00`;
+4. `Basico`: il valore del pH è superiore a `8.00`;
 5. `Neutro`: il valore del pH ha raggiunto un valore compreso in `[7.00, 8.00]`.
 
 ### Transizioni
@@ -87,6 +87,14 @@ I segnali utilizzati per le transizioni della macchina sono:
 |                    | `INIZIO_OPERAZIONE` |
 |                    | `TIPO_PH`           |
 |                    | `STOP_OPERAZIONE`   |
+
+### Grafo delle transizioni
+
+Di seguito un l'immagine del grafo delle transizioni.
+
+![FSM](img/FSM.jpg)
+
+### Tabella delle transizioni
 
 Di seguito il codice sorgente della tabella delle transizioni descritta nel formato utilizzato da **SIS**.
 
@@ -117,141 +125,35 @@ Di seguito il codice sorgente della tabella delle transizioni descritta nel form
 1----------- Neutro Reset   000010-0
 ```
 
-### Schema
+## Unità di elaborazione
 
-![FSM](./img/FSM.jpg)
+L'unità di elaborazione è suddivisa in più componenti:
 
-## Elaboratore (DATA-PATH)
-
-Il DATA-PATH è strutturato in 2 parti:
-
-1. *Contatore*: effetua il conteggio dei cicli di clock che servono per completare l'operazione;
-
-1. *Elaboratore*: porta il *pH* a un livello di neutralità oppure stampa l'errore se la codifica inserita non soddisfa i requisiti.
+1. *Contatore*: memorizza e incrementa il numero di cicli impiegati;
+2. *Modificatore*: applica le modifiche al pH;
+3. *Errore*: verifica se il valore del pH è superiore a `14`;
+4. *Neutrale*: verifica se il valore del pH è compreso in `[7.00, 8.00]`.
 
 ### Contatore
 
-#### Struttura
+Il contatore utilizza un registro, tre multiplexer e un sommatore ad 8 bit.
 
-Il contatore è costituito da:
+Il componente continua a sommare `1` al valore memorizzato finché riceve il segnale di `RESET = 1`. Invece quando riceve il segnale di `STOP = 1` smette di contare e restituisce il valore memorizzato.
 
-- `1` Registro a 8 bit.
+### Modificatore
 
-- `3` Multiplexer a 2 ingressi da 8 bit.
+Il modificatore utilizza un sommatore, un sottrattore ed un multiplexer ad 8 bit.
 
-- `1` Sommatore a 8 bit.
+Se il `TIPO_PH` equivale a `0`, incrementa il valore del pH di `0.50`, al contrario, se il `TIPO_PH` equivale ad `1`, allora lo decrementa di `0.25`.
 
-#### Utilizzo
+### Errore
 
-Il sommatore inizia il conto una volta preso in input il *pH*, e si riazzera ogni volta che `RESET = 1`. Dopo essere stato preso in input il *pH* viene salvato nel registro la cui uscita è collegata a un sommatore che incrementa il valore di `1` e un multiplexer che in base al segnale di `STOP_OPERAZIONE` decide se prendere il valore aggiornato oppure quello uscito dal registro.
+Il componente utilizza un maggiore ad 8 bit.
 
-L'uscita del contatore è collocata fra il primo multiplexer che riazzera i valori e l'ingresso del registro; essa è filtrata da un multiplexer che in base al segnale di `STOP_OPERAZIONE` sceglie se stampare il valore ottenuto dal conteggio (`NCLK`) oppure `0`.
+Confronta il valore del pH, se questo supera il `14`, allora restituisce `1`, cioè *vero*.
 
-![Counter](./img/Counter.jpg)
+### Neutrale
 
-### Elaboratore
+Il componente utilizza un maggiore ed un minore ad 8 bit; nonché una porta NOR ad un bit.
 
-L'elaboratore è suddiviso a sua volta in quattro parti:
-
-  1. Main.
-  2. Error.
-  3. Modifier.
-  4. Neutral.
-
-#### Error
-
-Error è costituito da `1` Maggiore a 8 bit.
-
-Prende in input il valore del *pH* inserito dall'utente e controlla se esso è maggiore di `14`, se si l'uscita `ERRORE = 1` altrimenti `ERRORE = 0`.
-
-![Error](./img/Error.jpg)
-
-#### Modifier
-
-Modifier è composto da:
-
-- `1` Sommatore a 8 bit.
-
-- `1` Sottrattore a 8 bit.
-
-- `1` Multiplexer a 2 ingressi da 8 bit.
-
-Prende in input il valore del registro, somma ad esso *0.50* e sottrae *0.25*, dopodiché in base al `TIPO_PH` sceglie quale valore prendere e portare in uscita.
-
-![Modifier](./img/Modifier.jpg)
-
-#### Neutral
-
-Neutral è composto da:
-
-- `1` Minore da 8 bit.
-
-- `1` Maggiore da 8 bit.
-
-- `1` NOR a 2 inressi da 1 bit.
-
-Prende in input il valore del multiplexer che seleziona tra il risultato del modifier e il valore del registro, dopodiché controlla se esso è compreso nell'intervallo `[7, 8]`, se lo è allora restituisce `NEUTRO = 1` sennò restituisce `NEUTRO = 0`.
-
-![Neutral](./img/Neutral.jpg)
-
-#### Main
-
-Il Main è il corpo principale del DATA-PATH che permette di collegare gli altri componenti con l'aggiunta di:
-
-- `2` Registri a 8 bit.
-
-- `4` Multiplexer a 2 ingressi a 8 bit.
-
-Il circuito prende in input il valore del *pH* solo quando abbiamo la combinazione `INIZIO_OPERAZIONE = 1` e `RESET = 0`, mentre se abbiamo `INIZIO_OPERAZIONE = 0` e `RESET = 0` prende il valore risultante dal multiplexer che seleziona fra il valore del registro e il risultato del Modifier, se invece abbiamo `RESET = 1` il circuito si resetta. Dopo aver preso il valore in input e averlo salvato in un registro, il circuito lo passa al modifier che in base al `TIPO_PH` sceglie se prendere il risultato della somma oppure quello della sottrazione, dopodiché il risultato viene filtrato da un multiplexer che in base a `STOP_OPERAZIONE` sceglie se tenere il valore del registo oppure aggiornarlo. L'uscita del multiplexer si dirama per andare dal Neutral che effettua il controllo e restituisce `CONTROLLO_NEUTRO` mentre l'altra diramazione entra nel multiplexer di `INIZIO_OPERAZIONE`.
-
-L'uscita del circuito è collocata tra l'uscita del multiplexer del reset e l'ingresso del registro, essa è filtrata da un multiplexer che in base al valore di `STOP_OPERAZIONE` se vale `0` l'uscita è `0`, invece se vale `1` l'uscita è quella del multiplexer del reset.
-
-![DATA-PATH](./img/DATA-PATH.jpg)
-
-## Statistiche del circuito
-
-Le statistiche del circuito prima dell'ottimizzazione per area sono:
-
-```js
-
-```
-
-Le statistiche dell'FSMD dopo l'ottimizzazione sono:
-
-```js
-FSMD            pi=10   po=20   nodes= 55       latches=20
-lits(sop)= 295
-```
-
-Le statistiche del circuito prima dell'ottimizzazione per area sono:
-<!-- SCREEN STATISTICHE -S->
-
-Per minimizzare la **FSM** i comandi da eseguire sono:
-
-```sis
-state_minimize stamina
-state_assign jedi
-source script.rugged
-source script.rugged
-source script.rugged
-```
-
-## Numero di gate e ritardo
-
-Il numero di gate del circuito è <!-- NUMERO GATE-D->.
-
-## La descrizione delle scelte progettuali
-
-Durante l'implementazione del progetto abbiamo fatto le seguenti scelte progettuali:
-
-1. Per controllare se il *pH* è acido oppure basico sfruttiamo il bit più significativo se esso è a 0 allora è acido se è a 1 allora è basico, però questo comprenderebbe che anche i valori neutri vengono assegnati a uno dei due tipi. Per risolvere questo problema abbiamo messo un controllore di neutralità nel DATA-PATH in modo tale che il DATA-PATH comunichi alla FSM di cambiare stato da ***Acido*** oppure ***Basico*** a ***Neutro***.
-
-1. Per controllare l'errore abbiamo aggiunto un componente al DATA-PATH che restituisce uno se e solo se è presente un errore (pH > 14) in questo modo la FSM cambia stato da ***Reset*** a ***Errore***.
-
-1. Se l'utente dallo stato di ***Errore*** oppure ***Neutro*** non inserisce **RST** a *1* la FSM rimane sullo stato in cui si trova.
-
-1. Per semplificare la scrittura e la lettura dei componenti in formato `blif` abbiamo suddiviso il DATA-PATH in più pezzi (`error.blif`, `modifier.blif`, `neutral.blif`, `counter.blif`) che poi abbiamo unito utilizzando i `subckt` e i `search`.
-
-1. Abbiamo aggiunto un registro per TIPO_PH essendo che senza di esso si andrebbe a creare un ciclo.
-
--->
+Confronta il valore del pH, se questo è compreso in `[7.00, 8.00]` allora restituisce `1`, cioè *vero*.

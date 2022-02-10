@@ -1,0 +1,188 @@
+.model DATAPATH
+.inputs PH7 PH6 PH5 PH4 PH3 PH2 PH1 PH0 RESET INIZIO_OPERAZIONE TIPO_PH \
+STOP_OPERAZIONE
+.outputs PH_FINALE7 PH_FINALE6 PH_FINALE5 PH_FINALE4 PH_FINALE3 PH_FINALE2 \
+PH_FINALE1 PH_FINALE0 NCLK7 NCLK6 NCLK5 NCLK4 NCLK3 NCLK2 NCLK1 NCLK0 ERRORE \
+NEUTRO
+.latch    TIPO_PH REG_TIPO_PH re NIL 0
+.latch    RST7 REG7 re NIL 0
+.latch    RST6 REG6 re NIL 0
+.latch    RST5 REG5 re NIL 0
+.latch    RST4 REG4 re NIL 0
+.latch    RST3 REG3 re NIL 0
+.latch    RST2 REG2 re NIL 0
+.latch    RST1 REG1 re NIL 0
+.latch    RST0 REG0 re NIL 0
+.latch    [235] [246] re NIL 0
+.latch    [236] [249] re NIL 0
+.latch    [237] [252] re NIL 0
+.latch    [238] [255] re NIL 0
+.latch    [239] [258] re NIL 0
+.latch    [240] [261] re NIL 0
+.latch    [241] [264] re NIL 0
+.latch    [242] [267] re NIL 0
+.names STOP_OPERAZIONE RST7 PH_FINALE7
+11 1
+.names STOP_OPERAZIONE RST6 PH_FINALE6
+11 1
+.names STOP_OPERAZIONE RST5 PH_FINALE5
+11 1
+.names STOP_OPERAZIONE RST4 PH_FINALE4
+11 1
+.names STOP_OPERAZIONE RST3 PH_FINALE3
+11 1
+.names STOP_OPERAZIONE RST2 PH_FINALE2
+11 1
+.names STOP_OPERAZIONE RST1 PH_FINALE1
+11 1
+.names STOP_OPERAZIONE RST0 PH_FINALE0
+11 1
+.names STOP_OPERAZIONE [235] NCLK7
+11 1
+.names STOP_OPERAZIONE [236] NCLK6
+11 1
+.names STOP_OPERAZIONE [237] NCLK5
+11 1
+.names STOP_OPERAZIONE [238] NCLK4
+11 1
+.names STOP_OPERAZIONE [239] NCLK3
+11 1
+.names STOP_OPERAZIONE [240] NCLK2
+11 1
+.names STOP_OPERAZIONE [241] NCLK1
+11 1
+.names STOP_OPERAZIONE [242] NCLK0
+11 1
+.names RST4 RST3 RST2 RST1 RST0 [946] ERRORE
+1----1 1
+-1---1 1
+--1--1 1
+---1-1 1
+----11 1
+.names REG7 REG6 REG5 REG4 REG3 REG2 REG1 REG0 [929] NEUTRO
+0111----- 1
+10--00000 1
+.names PH7 REG7 [331] [334] [336] [933] [947] RST7
+1---1-- 1
+-0-0-1- 1
+-11---1 1
+.names PH6 REG_TIPO_PH REG6 REG5 REG4 REG3 [331] [334] [336] [932] [933] [948] \
+RST6
+1-------1--- 1
+-------0-01- 1
+--1---1----1 1
+-00111----1- 1
+.names PH5 REG_TIPO_PH REG5 REG4 REG3 [331] [336] [351] [932] [933] [952] RST5
+1-----1---- 1
+-----1-00-- 1
+--1--1----1 1
+-0011----1- 1
+.names PH4 REG4 [331] [336] [351] RST4
+1--1- 1
+-11-1 1
+-01-0 1
+.names PH3 REG3 [331] [336] [930] [933] [936] RST3
+1--1--- 1
+-0--11- 1
+-11---1 1
+.names PH2 REG_TIPO_PH REG2 [331] [336] [933] [950] RST2
+1---1-- 1
+-10--1- 1
+--11--1 1
+.names PH1 REG1 [331] [336] RST1
+-11- 1
+1--1 1
+.names PH0 REG0 [331] [336] RST0
+-11- 1
+1--1 1
+.names RESET [236] [246] [249] [235]
+-11- 1
+0-10 1
+0001 1
+.names RESET [237] [249] [252] [236]
+-11- 1
+0-10 1
+0001 1
+.names RESET [252] [937] [237]
+011 1
+000 1
+.names RESET [242] [273] [951] [238]
+-11- 1
+0-01 1
+.names RESET [240] [258] [261] [239]
+-11- 1
+0-10 1
+0001 1
+.names RESET [261] [938] [240]
+011 1
+000 1
+.names RESET [242] [264] [267] [931] [241]
+-1--0 1
+0-10- 1
+0001- 1
+.names RESET STOP_OPERAZIONE [267] [242]
+011 1
+000 1
+.names [255] [258] [261] [931] [273]
+1110 1
+.names RESET INIZIO_OPERAZIONE [331]
+00 1
+.names REG_TIPO_PH REG6 REG5 REG4 REG3 [930] [334]
+-----0 1
+11---- 1
+-01--- 1
+--01-- 1
+---01- 1
+0---0- 1
+.names RESET INIZIO_OPERAZIONE [336]
+01 1
+.names REG_TIPO_PH REG3 [936] [351]
+--1 1
+11- 1
+00- 1
+.names REG5 REG4 [929]
+1- 1
+-1 1
+.names REG_TIPO_PH REG2 [930]
+0- 1
+-0 1
+.names [264] [267] [931]
+0- 1
+-0 1
+.names REG_TIPO_PH [929] [932]
+0- 1
+-1 1
+.names STOP_OPERAZIONE [331] [933]
+01 1
+.names STOP_OPERAZIONE [930] [936]
+1- 1
+-0 1
+.names STOP_OPERAZIONE [273] [937]
+1- 1
+-0 1
+.names STOP_OPERAZIONE [931] [938]
+1- 1
+-1 1
+.names RST7 RST6 [945]
+11 1
+.names RST5 [945] [946]
+11 1
+.names STOP_OPERAZIONE [334] [947]
+1- 1
+-1 1
+.names [334] [351] [932] [948]
+-1- 1
+1-1 1
+.names REG_TIPO_PH REG4 [351] [949]
+--1 1
+11- 1
+.names STOP_OPERAZIONE REG_TIPO_PH [950]
+1- 1
+-0 1
+.names [239] [255] [258] [951]
+-1- 1
+0-1 1
+.names REG4 REG3 [949] [952]
+--1 1
+01- 1
+.end

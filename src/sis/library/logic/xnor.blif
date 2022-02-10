@@ -1,0 +1,16 @@
+.model XNOR
+
+.inputs  A B
+.outputs RES
+
+# Tabella di verità
+# AB R
+# 00 1
+# 01 0
+# 10 0
+# 11 1
+.names A B RES
+    00 1
+    11 1
+
+.end

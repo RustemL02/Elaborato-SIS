@@ -1,0 +1,12 @@
+state_minimize stamina
+state_assign jedi
+
+stg_to_network
+
+source script.rugged
+source script.rugged
+source script.rugged
+source script.rugged
+source script.rugged
+
+fx

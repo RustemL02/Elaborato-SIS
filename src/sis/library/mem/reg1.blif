@@ -1,0 +1,8 @@
+.model REG1
+
+.inputs  A
+.outputs MEM
+
+.latch A MEM re NIL 0
+
+.end

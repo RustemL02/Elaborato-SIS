@@ -1,0 +1,21 @@
+.model SUB8
+
+.inputs  A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0 BIN
+.outputs RES7 RES6 RES5 RES4 RES3 RES2 RES1 RES0 BOUT
+
+.subckt SUB1 A=A0 B=B0 BIN=BIN RES=RES0 BOUT=BR0
+.subckt SUB1 A=A1 B=B1 BIN=BR0 RES=RES1 BOUT=BR1
+.subckt SUB1 A=A2 B=B2 BIN=BR1 RES=RES2 BOUT=BR2
+.subckt SUB1 A=A3 B=B3 BIN=BR2 RES=RES3 BOUT=BR3
+.subckt SUB1 A=A4 B=B4 BIN=BR3 RES=RES4 BOUT=BR4
+.subckt SUB1 A=A5 B=B5 BIN=BR4 RES=RES5 BOUT=BR5
+.subckt SUB1 A=A6 B=B6 BIN=BR5 RES=RES6 BOUT=BR6
+.subckt SUB1 A=A7 B=B7 BIN=BR6 RES=RES7 BOUT=BOUT
+
+# Sottrattore bit a bit che usufruisce del BOUT
+# di un bit per utilizzarlo come BIN del bit
+# alla sua sinistra.
+
+.end
+
+.search sub1.blif

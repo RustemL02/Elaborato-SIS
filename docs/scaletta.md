@@ -9,21 +9,21 @@
 ## Architettura generale
 
 - [x] Architettura generale
-- [ ]     Immagine
+- [x]     Immagine
 - [x]     Segnali interni
 
 ## Macchina a stati finiti (FSM)
 
 - [x] Macchina a stati finiti (FSM)
 - [x]     Stati
-- [ ]     Transizioni
+- [x]     Transizioni
 - [x]     Schema
 
 ## Elaboratore (DATA-PATH)
 
 - [x] Elaboratore (DATA-PATH)
 - [x]     Componenti (per ogni)
-    - [ ]     Schema
+  - [ ]     Schema
 - [ ]     Schema
 
 ## Alcune simulazioni
@@ -32,11 +32,11 @@
 
 ## Statistiche
 
-- [~] Statistiche
+- [ ] Statistiche
 
 ## Mappatura tecnologica
 
-- [~] Mappatura tecnologica
+- [ ] Mappatura tecnologica
 
 ## Scelte progettuali
 

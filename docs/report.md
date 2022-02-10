@@ -146,17 +146,23 @@ Il modificatore utilizza un sommatore, un sottrattore ed un multiplexer ad 8 bit
 
 Se il `TIPO_PH` equivale a `0`, incrementa il valore del pH di `0.50`, al contrario, se il `TIPO_PH` equivale ad `1`, allora lo decrementa di `0.25`.
 
+![Modifier](./img/Modifier.jpg)
+
 ### Errore
 
 Il componente utilizza un maggiore ad 8 bit.
 
 Confronta il valore del pH, se questo supera il `14`, allora restituisce `1`, cioè *vero*.
 
+![Error](./img/Error.jpg)
+
 ### Neutrale
 
 Il componente utilizza un maggiore ed un minore ad 8 bit; nonché una porta NOR ad un bit.
 
 Confronta il valore del pH, se questo è compreso in `[7.00, 8.00]` allora restituisce `1`, cioè *vero*.
+
+![Neutral](./img/Neutral.jpg)
 
 ## Alcune simulazioni
 

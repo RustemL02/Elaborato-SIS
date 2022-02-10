@@ -1,2 +1,4 @@
 # File da escludere
 docs/watcher
+
+.*/

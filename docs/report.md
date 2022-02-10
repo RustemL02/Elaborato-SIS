@@ -4,11 +4,11 @@ Abbiamo sviluppato un circuito che controlla un meccanismo chimico, il cui scopo
 
 ## Traccia
 
-Il valore del pH viene espresso in valori compresi tra `0.00` e `14.0`: nell'intervallo `[0.00, 7.00)` si trovano i valori acidi, mentre in quello `(8.00, 14.0]` si trovano i valori basici, infine i valori compresi in `[7.00, 8.00]` sono considerati neutrali. Tutti gli altri valori non sono accettabili e comportano un errore.
+Il valore del pH viene espresso in valori compresi tra `0.00` e `14.0`: nell'intervallo `[0.00, 7.00)` si trovano i valori acidi, mentre in quello `(8.00, 14.0]` si trovano i valori basici, infine i valori compresi tra `7.00 ed 8.00` sono considerati neutrali. Tutti gli altri valori non sono accettabili e comportano un errore.
 
 Il sistema è quindi dotato di due valvole: la prima può *decrementare* il valore del pH di `0.25` in un singolo ciclo di clock, mentre la seconda lo può *incrementare* di `0.50` nello stesso periodo di tempo.
 
-![Sistema](img/Sistema.jpg){ width=65% }
+![Illustrazione del circuito](./img/abstract-system.jpg "Illustrazione astratta del sistema."){ width=65% }
 
 ### Interfaccia del circuito
 
@@ -18,9 +18,9 @@ Il circuito accetta i seguenti segnali di ingresso:
 | --------------------: | :-------------------------------------------------------------------------------------- |
 | `RST`                 | Ordina al circuito di tornare allo stato iniziale. Prevale su qualsiasi altro ingresso. |
 | `START`               | Ordina al circuito di leggere il valore presente nell'ingresso `PH[8]`.                 |
-| `PH[8]`               | Rappresentazione del valore iniziale assunto dal pH della soluzione.                    |
+| `PH_INIZIALE[8]`      | Rappresentazione del valore iniziale assunto dal pH della soluzione.                    |
 
-L'ingresso `PH[8]` è un byte codificato in **virgola fissa** con 4 bit dedicati alla parte intera.
+L'ingresso `PH_INIZIALE[8]` è un byte codificato in **virgola fissa** con 4 bit dedicati alla parte intera.
 
 Il circuito produce i seguenti segnali di uscita:
 
@@ -33,15 +33,15 @@ Il circuito produce i seguenti segnali di uscita:
 | `PH_FINALE[8]`        | Rappresentazione del valore finale assunto dal pH della soluzione.                      |
 | `NCLK[8]`             | Rappresentazione del numero di cicli utilizzati per completare le operazioni.           |
 
-L'uscita `PH_FINALE[8]` è un byte codificato esattamente come l'ingresso `PH[8]`, mentre il byte `NCLK[8]` viene codificato in **modulo**.
+L'uscita `PH_FINALE[8]` è un byte codificato esattamente come l'ingresso `PH_INIZIALE[8]`, mentre il byte `NCLK[8]` viene codificato in **modulo**.
 
 ## Architettura generale
 
 Il sistema implementa il modello ***FSMD***, cioè collega una *macchina a stati finiti* (detta `FSM`) con un'*unità di elaborazione* (chiamata `Data path`).
 
-Il compito della macchina a stati è quello di contestualizzare i calcoli eseguiti dall'elaboratore, viceversa quest'ultimo ha il ruolo di aiutare la macchina a determinare in che stato transitare.
+Il compito della macchina a stati è quello di contestualizzare i calcoli eseguiti dall'unità di elaborazione, viceversa quest'ultima ha il ruolo di aiutare la macchina a determinare in che stato transitare.
 
-<!-- Immagine da sistmare i collegamenti tra FSM e DATA-PATH -->
+![Diagramma del circuito](./img/abstract-circuit.jpg "Diagramma astratto del circuito"){ width=95% }
 
 ### Segnali interni
 
@@ -65,125 +65,115 @@ I segnali di controllo utilizzati sono i seguenti:
 
 ## Macchina a stati finiti (FSM)
 
-Abbiamo individuato cinque stati per la macchina, cioè:
+Abbiamo individuato cinque stati per questa macchina, cioè:
 
-1. `Reset`: stato iniziale, in cui l'elaboratore viene inizializzato;
+1. `Reset`: stato iniziale nel quale il circuito attende il pH in ingresso;
 2. `Errore`: il valore del pH appena inserito non è valido;
-3. `Acido`: il valore del pH è inferiore a `7.00`;
-4. `Basico`: il valore del pH è superiore a `8.00`;
-5. `Neutro`: il valore del pH ha raggiunto un valore compreso in `[7.00, 8.00]`.
+3. `Acido`: il valore del pH attuale è inferiore a `7.00`;
+4. `Basico`: il valore del pH attuale è superiore a `8.00`;
+5. `Neutro`: il valore del pH ha raggiunto un valore tra `7.00` ed `8.00`.
 
 ### Transizioni
 
-I segnali utilizzati per le transizioni della macchina sono:
+Lo stato iniziale della macchina è quello di *Reset*, da questo può spostarsi solamente quando riceve il segnale `START = 1`, in quel caso:
 
-| **Ingressi**       | **Uscite**          |
-| -----------------: | :------------------ |
-| `RST`              | `FINE_OPERAZIONE`   |
-| `START`            | `ERRORE_SENSORE`    |
-| `PH[8]`            | `VALVOLA_ACIDO`     |
-| `ERRORE`           | `VALVOLA_BASICO`    |
-| `NEUTRO`           | `RESET`             |
-|                    | `INIZIO_OPERAZIONE` |
-|                    | `TIPO_PH`           |
-|                    | `STOP_OPERAZIONE`   |
+- Quando il segnale di controllo `ERRORE` vale `1` transita nello stato di *Errore*;
+- Quando il bit più significativo del segnale `PH[8]` vale `0` transita nello stato *Acido*;
+- Quando il bit più significatico del segnale `PH[8]` vale `1` transita nello stato *Basico*.
 
-### Grafo delle transizioni
+La macchina si sposta nello stato *Neutro* quando il segnale di controllo `NEUTRO` vale `1`, infine, da ognuno degli stati può tornare a quello iniziale quando riceve il segnale `RST = 1`.
 
-Di seguito un l'immagine del grafo delle transizioni.
+#### Grafo delle transizioni (STG)
 
-![FSM](img/FSM.jpg)
+La macchina possiede i seguenti segnali di ingresso ed uscita:
 
-<!-- SPIEGAZIONE TRANSIZIONI -->
+| **Ingressi**      | **/** | **Uscite**                                               |
+| ----------------: | ----- | :------------------------------------------------------- |
+| `RST START PH[8]` | **/** | `FINE_OPER. ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO` |
+| `ERRORE NEUTRO`   | **/** | `RESET INIZIO_OPER. TIPO_PH STOP_OPER.`                  |
 
-### Tabella delle transizioni
+![Macchina a stati](./img/state-machine.svg "Macchina a stati finiti"){ width=100% }
 
-Di seguito il codice sorgente della tabella delle transizioni descritta nel formato utilizzato da **SIS**.
+## Unità di elaborazione (Data path)
 
-```sh
-# Transizioni da Reset
-1----------- Reset  Reset   000010-0
-00---------- Reset  Reset   000010-0
-01--------1- Reset  Errore  010001-0
-010-------0- Reset  Acido   00010100
-011-------0- Reset  Basico  00100110
+Abbiamo suddiviso l'unità di elaborazione in più sottoproblemi risolti da delle componenti specifiche:
 
-# Transizione da Errore
-0----------- Errore Errore  010000-1
-1----------- Errore Reset   000010-0
+1. *Contatore*: ha il compito di memorizzare ed incrementa il numero di cicli impiegati;
+2. *Modificatore*: ha il compito di aggiornare il valore del pH;
+3. *Errore*: ha il compito di verificare se il valore del pH è superiore a `14,0`;
+4. *Neutrale*: ha il compito di verificare se il valore del pH è tra `7,00` ed `8,00`.
 
-# Transizioni da Acido
-0----------0 Acido  Acido   00010000
-0----------1 Acido  Neutro  10000001
-1----------- Acido  Reset   000010-0
+### Componenti
 
-# Transizioni da Basico
-0----------0 Basico Basico  00100010
-0----------1 Basico Neutro  10000011
-1----------- Basico Reset   000010-0
+Il contatore è un componente a sé stante dedicato esclusivamente al calcolo dell'uscita `NCLK[8]`, mentre tutti gli altri collaborano tra loro sia per determinare i segnali di controllo, ma soprattutto per calcolare l'uscita `PH_FINALE[8]`.
 
-# Transizioni da Neutro
-0----------- Neutro Neutro  100000-1
-1----------- Neutro Reset   000010-0
-```
+#### Contatore
 
-## Unità di elaborazione
+Il contatore è composto da un registro, tre multiplexer ed un sommatore ad 8 bit.
 
-L'unità di elaborazione è suddivisa in più componenti:
+Incrementa di `1` il valore memorizzato nel registro ad ogni ciclo ad eccezione dei casi in cui riceve il segnale `STOP = 1`. Invece, quando l'ingresso `RESET` equivale ad `1`, indipendentemente dal valore dell'altro, azzera il valore memorizzato nel registro.
 
-1. *Contatore*: memorizza e incrementa il numero di cicli impiegati;
-2. *Modificatore*: applica le modifiche al pH;
-3. *Errore*: verifica se il valore del pH è superiore a `14`;
-4. *Neutrale*: verifica se il valore del pH è compreso in `[7.00, 8.00]`.
+![Contatore](img/components/counter.svg "Contatore"){ width=60% }
 
-### Contatore
-
-Il contatore utilizza un registro, tre multiplexer ed un sommatore, tutti ad 8 bit.
-
-Il componente incrementa di `1` il valore memorizzato finché non riceve il segnale di `RESET = 1`. Quando riceve il segnale di `STOP = 1` non incrementa e restituisce il valore memorizzato.
-
-### Modificatore
+#### Modificatore
 
 Il modificatore utilizza un sommatore, un sottrattore ed un multiplexer, tutti ad 8 bit.
 
-Se il `TIPO_PH` in ingresso equivale a `0`, incrementa il valore del pH di `0.50`, al contrario, se equivale ad `1`, lo decrementa di `0.25`.
+Se il `TIPO_PH` in ingresso equivale a `0`, incrementa il valore del pH di `0,50`, al contrario, se equivale ad `1`, lo decrementa di `0,25`.
 
-![Modifier](./img/Modifier.jpg)
+![Modificatore](./img/components/modifier.svg "Modificatore"){ width=45% }
 
-### Errore
+#### Verifica degli errori
 
 Il componente utilizza un maggiore ad 8 bit.
 
 Confronta il valore del pH, se questo supera il `14`, allora restituisce `1`, cioè *vero*, altrimenti `0` cioè *falso*.
 
-![Error](./img/Error.jpg)
+![Verifica dell'errore](./img/components/error.jpg "Errore"){ width=55% }
 
-### Neutrale
+#### Verifica della neutralità
 
 Il componente utilizza un maggiore ed un minore ad 8 bit ed una porta NOR.
 
 Confronta il valore del pH, se questo è compreso in `[7.00, 8.00]` allora restituisce `1`, cioè *vero*, altrimenti `0` cioè *falso*.
 
-![Neutral](./img/Neutral.jpg)
+![Verifica della neutralità](./img/components/neutral.jpg "Neutrale"){ width=50% }
 
-### Corpo completo
+<!-- ### Corpo completo
 
-È il vero e proprio elaboratore che permette di collegare gli altri componenti con l'aggiunta di `2` registri ad 8 bit e `4` multiplexer a 2 ingressi a 8 bit.
+È il vero e proprio elaboratore che utilizza gli altri componenti, due registri ad 8 bit e quattro multiplexer a 2 ingressi a 8 bit.
 
-Il circuito prende in input il valore del pH solo quando riceve la combinazione `INIZIO_OPERAZIONE = 1` e `RESET = 0`, mentre se abbiamo `INIZIO_OPERAZIONE = 0` e `RESET = 0` prende il valore risultante dal multiplexer che seleziona fra il valore del registro e il risultato del *Modifier*, se invece abbiamo `RESET = 1` il circuito si resetta.
+Il circuito riceve in ingresso il valore del pH non appena rileva la combinazione `RESET = 0, INIZIO_OPERAZIONE = 1`, in seguito:
+
+- verifica se il valore è accettabile tramite il componente *Errore*;
+- se il segnale `FINE_OPERAZIONE` equivale ad `1` restituisce il pH, altrimenti un byte di valore `0`;
+- memorizza il valore nel registro sottostante.
+
+Nei cicli successivi, se non sopraggiunge il segnale `RESET = 1`, il modificatore legge il valore memorizzato e lo modifica in base al `TIPO_PH`; infine  -->
+
+<!-- Nei cicli di clock successivi tale valore viene aggiornato dal modificatore in base al `TIPO_PH`, a quel punto il multiplexer successivo:
+
+- se il segnale `STOP_OPERAZIONE` equivale a `0` restituisce il valore aggiornato;
+- se il segnale `STOP_OPERAZIONE` equivale ad `1` restituisce il valore memorizzato.
+
+Infine viene verificato  -->
+
+<!-- Il circuito prende in input il valore del pH solo quando riceve la combinazione `INIZIO_OPERAZIONE = 1` e `RESET = 0`, mentre se abbiamo `INIZIO_OPERAZIONE = 0` e `RESET = 0` prende il valore risultante dal multiplexer che seleziona fra il valore del registro e il risultato del *Modifier*, se invece abbiamo `RESET = 1` il circuito si resetta.
 
 Dopo aver preso il valore in input e averlo salvato in un registro, il circuito lo passa al *Modifier* che in base al `TIPO_PH` sceglie se prendere il risultato della somma con `TIPO_PH = 0`, cioè *acido* oppure quello della sottrazione `TIPO_PH = 1`,cioè *basico*.
 
 Il risultato viene filtrato da un multiplexer che in base a `STOP_OPERAZIONE` sceglie se tenere il valore del registo oppure aggiornarlo. L'uscita del multiplexer si dirama per andare da Neutral che effettua il controllo e restituisce `CONTROLLO_NEUTRO` mentre l'altra diramazione entra nel multiplexer di `INIZIO_OPERAZIONE`.
 
-L'uscita del circuito è collocata tra l'uscita del multiplexer del reset e l'ingresso del registro, essa è filtrata da un multiplexer che in base al valore di `STOP_OPERAZIONE` se vale `0` l'uscita è `0`, invece se vale `1` l'uscita è quella del multiplexer del reset.
+L'uscita del circuito è collocata tra l'uscita del multiplexer del reset e l'ingresso del registro, essa è filtrata da un multiplexer che in base al valore di `STOP_OPERAZIONE` se vale `0` l'uscita è `0`, invece se vale `1` l'uscita è quella del multiplexer del reset. -->
 
-<!-- IMMMAGINE DATAPATH COMPLETO CON COMPONENTI -->
-<!-- IMMMAGINE DATAPATH COMPLETO -->
+<!-- ![Data path](./img/DATA-PATH.jpg "Data path"){ width=100% } -->
+
+<!-- IMMMAGINE DATAPATH COMPLETO CON COMPONENTI --:>
+<!-- IMMMAGINE DATAPATH COMPLETO --:>
 
 ## Alcune simulazioni
 
-<!-- SIMULAZIONI -->
+<!-- SIMULAZIONI --:>
 
 ## Statistiche
 

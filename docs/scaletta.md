@@ -16,12 +16,12 @@
 
 - [x] Macchina a stati finiti (FSM)
 - [x]     Stati
-- [x]     Transizioni
+- [ ]     Transizioni
 - [x]     Schema
 
 ## Elaboratore (DATA-PATH)
 
-- [ ] Elaboratore (DATA-PATH)
+- [x] Elaboratore (DATA-PATH)
 - [x]     Componenti (per ogni)
     - [ ]     Schema
 - [ ]     Schema
@@ -32,11 +32,11 @@
 
 ## Statistiche
 
-- [x] Statistiche
+- [~] Statistiche
 
 ## Mappatura tecnologica
 
-- [x] Mappatura tecnologica
+- [~] Mappatura tecnologica
 
 ## Scelte progettuali
 

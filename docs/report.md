@@ -94,6 +94,8 @@ Di seguito un l'immagine del grafo delle transizioni.
 
 ![FSM](img/FSM.jpg)
 
+<!-- SPIEGAZIONE TRANSIZIONI -->
+
 ### Tabella delle transizioni
 
 Di seguito il codice sorgente della tabella delle transizioni descritta nel formato utilizzato da **SIS**.
@@ -136,15 +138,15 @@ L'unità di elaborazione è suddivisa in più componenti:
 
 ### Contatore
 
-Il contatore utilizza un registro, tre multiplexer e un sommatore ad 8 bit.
+Il contatore utilizza un registro, tre multiplexer ed un sommatore, tutti ad 8 bit.
 
-Il componente continua a sommare `1` al valore memorizzato finché riceve il segnale di `RESET = 1`. Invece quando riceve il segnale di `STOP = 1` smette di contare e restituisce il valore memorizzato.
+Il componente incrementa di `1` il valore memorizzato finché non riceve il segnale di `RESET = 1`. Quando riceve il segnale di `STOP = 1` non incrementa e restituisce il valore memorizzato.
 
 ### Modificatore
 
-Il modificatore utilizza un sommatore, un sottrattore ed un multiplexer ad 8 bit.
+Il modificatore utilizza un sommatore, un sottrattore ed un multiplexer, tutti ad 8 bit.
 
-Se il `TIPO_PH` equivale a `0`, incrementa il valore del pH di `0.50`, al contrario, se il `TIPO_PH` equivale ad `1`, allora lo decrementa di `0.25`.
+Se il `TIPO_PH` in ingresso equivale a `0`, incrementa il valore del pH di `0.50`, al contrario, se equivale ad `1`, lo decrementa di `0.25`.
 
 ![Modifier](./img/Modifier.jpg)
 
@@ -152,17 +154,32 @@ Se il `TIPO_PH` equivale a `0`, incrementa il valore del pH di `0.50`, al contra
 
 Il componente utilizza un maggiore ad 8 bit.
 
-Confronta il valore del pH, se questo supera il `14`, allora restituisce `1`, cioè *vero*.
+Confronta il valore del pH, se questo supera il `14`, allora restituisce `1`, cioè *vero*, altrimenti `0` cioè *falso*.
 
 ![Error](./img/Error.jpg)
 
 ### Neutrale
 
-Il componente utilizza un maggiore ed un minore ad 8 bit; nonché una porta NOR ad un bit.
+Il componente utilizza un maggiore ed un minore ad 8 bit ed una porta NOR.
 
-Confronta il valore del pH, se questo è compreso in `[7.00, 8.00]` allora restituisce `1`, cioè *vero*.
+Confronta il valore del pH, se questo è compreso in `[7.00, 8.00]` allora restituisce `1`, cioè *vero*, altrimenti `0` cioè *falso*.
 
 ![Neutral](./img/Neutral.jpg)
+
+### Corpo completo
+
+È il vero e proprio elaboratore che permette di collegare gli altri componenti con l'aggiunta di `2` registri ad 8 bit e `4` multiplexer a 2 ingressi a 8 bit.
+
+Il circuito prende in input il valore del pH solo quando riceve la combinazione `INIZIO_OPERAZIONE = 1` e `RESET = 0`, mentre se abbiamo `INIZIO_OPERAZIONE = 0` e `RESET = 0` prende il valore risultante dal multiplexer che seleziona fra il valore del registro e il risultato del *Modifier*, se invece abbiamo `RESET = 1` il circuito si resetta.
+
+Dopo aver preso il valore in input e averlo salvato in un registro, il circuito lo passa al *Modifier* che in base al `TIPO_PH` sceglie se prendere il risultato della somma con `TIPO_PH = 0`, cioè *acido* oppure quello della sottrazione `TIPO_PH = 1`,cioè *basico*.
+
+Il risultato viene filtrato da un multiplexer che in base a `STOP_OPERAZIONE` sceglie se tenere il valore del registo oppure aggiornarlo. L'uscita del multiplexer si dirama per andare da Neutral che effettua il controllo e restituisce `CONTROLLO_NEUTRO` mentre l'altra diramazione entra nel multiplexer di `INIZIO_OPERAZIONE`.
+
+L'uscita del circuito è collocata tra l'uscita del multiplexer del reset e l'ingresso del registro, essa è filtrata da un multiplexer che in base al valore di `STOP_OPERAZIONE` se vale `0` l'uscita è `0`, invece se vale `1` l'uscita è quella del multiplexer del reset.
+
+<!-- IMMMAGINE DATAPATH COMPLETO CON COMPONENTI -->
+<!-- IMMMAGINE DATAPATH COMPLETO -->
 
 ## Alcune simulazioni
 
@@ -174,7 +191,17 @@ Confronta il valore del pH, se questo è compreso in `[7.00, 8.00]` allora resti
 
 Le statistiche del circuito prima dell'ottimizzazione per area sono:
 
-```sh
+```js
+FSM             pi=12   po= 8   nodes= 11       latches= 3
+lits(sop)= 144  #states(STG)=   5
+```
+
+```js
+DATAPATH        pi=12   po=18   nodes=165       latches=17
+lits(sop)= 881
+```
+
+```js
 FSMD            pi=10   po=20   nodes=174       latches=17
 lits(sop)= 881
 ```
@@ -189,11 +216,32 @@ Dove:
 
 ### Dopo l'ottimizzazione
 
-Gli stati dopo l'ottimizzazione della macchina sono rimasti `5`.
+Per covertire la FSM in un circuito abbiamo utilizzato i seguenti comandi:
+
+```sh
+state_minimize stamina
+state_assign jedi
+
+stg_to_network
+```
+
+> Il numero degli stati è rimasto identico nonostante l'esecuzione del comando `state_minimize stamina`.
+
+Dopo aver convertito la FSM, abbiamo ottimizzato tutte le parti del circuito ripetendo il comando `source script.rugged` finché non ha raggiunto il miglior risultato possibile, infine abbiamo eseguito l'istruzione `fx` per ridurre ulteriormente il numero dei letterali.
 
 Le statistiche del circuito dopo l'ottimizzazione per area sono:
 
-```sh
+```js
+FSM             pi=12   po= 8   nodes= 10       latches= 3
+lits(sop)=  47  #states(STG)=   5
+```
+
+```js
+DATAPATH        pi=12   po=18   nodes= 49       latches=17
+lits(sop)= 244
+```
+
+```js
 FSMD            pi=10   po=20   nodes= 55       latches=20
 lits(sop)= 295
 ```

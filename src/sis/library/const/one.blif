@@ -1,0 +1,9 @@
+.model ONE
+
+.outputs RES
+
+# Questo nodo produce costantemente 1.
+.names RES
+    1
+
+.end

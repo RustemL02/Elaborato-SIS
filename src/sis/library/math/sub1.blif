@@ -1,0 +1,22 @@
+.model SUB1
+
+.inputs  A B BIN
+.outputs RES BOUT
+
+# Questo nodo determina il prestito.
+.names A B BIN BOUT
+    001 1
+    01- 1
+    111 1
+
+# Questo nodo determina S = A - B.
+.names A B S
+    01 1
+    10 1
+
+# Questo nodo determina RES = S - BIN.
+.names S BIN RES
+    01 1
+    10 1
+
+.end

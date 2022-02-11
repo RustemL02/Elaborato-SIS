@@ -14,25 +14,26 @@
 # (ingressi, stato-corrente, stato-prossimo, uscite)
 
     # Transizioni da Reset
-    1----------- Reset  Reset   000010-0
-    00---------- Reset  Reset   000010-0
-    01--------1- Reset  Errore  010001-0
-    010-------0- Reset  Acido   00010100
-    011-------0- Reset  Basico  00100110
+    1----------- Reset Reset  000010-0
+    00---------- Reset Reset  000010-0
+    01--------1- Reset Errore 010001-1
+    01--------01 Reset Neutro 100001-1
+    010-------00 Reset Acido  00010100
+    011-------00 Reset Basico 00100110
 
     # Transizione da Errore
-    0----------- Errore Errore  010000-1
-    1----------- Errore Reset   000010-0
+    0----------- Errore Errore 010000-1
+    1----------- Errore Reset  000010-0
 
     # Transizioni da Acido
-    0----------0 Acido  Acido   00010000
-    0----------1 Acido  Neutro  10000001
-    1----------- Acido  Reset   000010-0
+    0----------0 Acido Acido   00010000
+    0----------1 Acido Neutro  10000001
+    1----------- Acido Reset   000010-0
 
     # Transizioni da Basico
-    0----------0 Basico Basico  00100010
-    0----------1 Basico Neutro  10000011
-    1----------- Basico Reset   000010-0
+    0----------0 Basico Basico 00100010
+    0----------1 Basico Neutro 10000011
+    1----------- Basico Reset  000010-0
 
     # Transizioni da Neutro
     0----------- Neutro Neutro  100000-1

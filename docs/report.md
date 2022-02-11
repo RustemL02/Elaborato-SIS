@@ -230,6 +230,8 @@ Il *Contatore dei cicli* invece è un componente autonomo e abbiamo scelto di no
 
 Dopo aver progettato i due sottosistemi abbiamo provato alcuni flussi di esecuzione: il primo vede come ingresso un pH pari a `5,75` che quindi impiega 4 cicli per completare l'operazione con un pH finale di `5,75`; nel secondo invece abbiamo tentato di inserire un pH non valido e dopo aver segnalato l'errore non ha elaborato oltre.
 
+### Esempio 1
+
 ```sh
 # Inserendo RST = 0, START = 1, PH = 5,75.
 sis> simulate 0 1 0 1 0 1 1 1 0 0 
@@ -272,11 +274,27 @@ Outputs: 1 0 0 0 0 1 1 1 0 1 0 0 0 0 0 0 0 1 0 0
 Next state: 00111010000000100001
 ```
 
-<!-- 
-## Alcune simulazioni
+### Esempio 2
 
-SIMULAZIONI
+```sh
+# Inserendo RST = 0, START = 1, PH = 14.0625.
+sis> sim 0 1 1 1 1 0 0 0 0 1
 
+# Otteniamo ERRORE_SENSORE = 1.
+Network simulation:
+Outputs: 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 01110000100000001110
+
+# Inserendo tutti i valori a 0.
+sis> sim 0 0 0 0 0 0 0 0 0 0 
+
+# Otteniamo ERRORE_SENSORE = 1, PH = 14.0625.
+Network simulation:
+Outputs: 0 1 0 0 1 1 1 0 0 0 0 1 0 0 0 0 0 0 0 1
+Next state: 11110000100000001110
+```
+
+<!--
 ## Statistiche
 
 ### Prima dell'ottimizzazione

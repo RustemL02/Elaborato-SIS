@@ -1,0 +1,37 @@
+# Modifica il byte in ingresso in base  al valore
+# del bit selettore SEL.
+# Assume che il byte sia codificato in virgola
+# fissa con 4 bit dedicati alla parte intera.
+.model MODIFIER
+
+# Accetta due input: un bit selettore ed un  byte
+# da elaborare.
+# Risponde con un byte nella medesima codifica.
+# Aggiunge 0.5 se SEL = 0, altrimenti sottrae 0.25.
+.inputs  SEL VAL7 VAL6 VAL5 VAL4 VAL3 VAL2 VAL1 VAL0
+.outputs RES7 RES6 RES5 RES4 RES3 RES2 RES1 RES0
+
+# Valori costanti.
+.subckt ZERO RES=0
+.subckt ONE  RES=1
+
+# Aggiunge al byte in ingresso 0.5.
+.subckt SUM8 A7=VAL7 A6=VAL6 A5=VAL5 A4=VAL4 A3=VAL3 A2=VAL2 A1=VAL1 A0=VAL0 B7=0 B6=0 B5=0 B4=0 B3=1 B2=0 B1=0 B0=0 CIN=0 RES7=SUM7 RES6=SUM6 RES5=SUM5 RES4=SUM4 RES3=SUM3 RES2=SUM2 RES1=SUM1 RES0=SUM0 COUT=COUT
+
+# Sottrae al byte in ingresso 0.5
+.subckt SUB8 A7=VAL7 A6=VAL6 A5=VAL5 A4=VAL4 A3=VAL3 A2=VAL2 A1=VAL1 A0=VAL0 B7=0 B6=0 B5=0 B4=0 B3=0 B2=1 B1=0 B0=0 BIN=0 RES7=SUB7 RES6=SUB6 RES5=SUB5 RES4=SUB4 RES3=SUB3 RES2=SUB2 RES1=SUB1 RES0=SUB0 BOUT=BOUT
+
+# Quando il bit selettore SEL equivale a ZERO,
+# il multiplexer propaga il risultato della somma,
+# al contrario, quando equivale ad UNO, propaga
+# il risultato della sottrazione.
+.subckt MUX8 SEL=SEL A7=SUM7 A6=SUM6 A5=SUM5 A4=SUM4 A3=SUM3 A2=SUM2 A1=SUM1 A0=SUM0 B7=SUB7 B6=SUB6 B5=SUB5 B4=SUB4 B3=SUB3 B2=SUB2 B1=SUB1 B0=SUB0 OUT7=RES7 OUT6=RES6 OUT5=RES5 OUT4=RES4 OUT3=RES3 OUT2=RES2 OUT1=RES1 OUT0=RES0
+
+.end
+
+# Ricerca dei modelli ZERO, ONE, MUX8, SUM8, SUB8.
+.search zero.blif
+.search one.blif
+.search mux8.blif
+.search sum8.blif
+.search sub8.blif

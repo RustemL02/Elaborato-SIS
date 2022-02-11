@@ -1,0 +1,61 @@
+# Controllore del circuito, cioè la FSM; Dato il pH di una
+# soluzione lo porta a neutralità, precisamente nell'intervallo
+# [7, 8].
+# Assume che il pH sia un byte codificato in virgola fissa con
+# 4 bit dedicati alla parte intera.
+.model FSM
+
+# Accetta cinque input: un bit di reset, un bit di start,
+# un byte rappresentante il pH, e due bit di controllo:
+# uno determina se il Data path ha incontrato una codifica
+# inaccettabile e l'altro invece se la codifica indica un pH
+# neutro.
+# Risponde con: un bit il quale indica se l'operazione è
+# stata completata, un bit che comunica l'errore nella
+# codifica del byte ed due bit che indicano quale valvola
+# aprire per modificare il pH.
+# Inoltre invia al Data path quattro segnali di stato:
+# un bit di reset, un bit che indica se l'operazione deve
+# iniziare, un bit che indica il tipo del pH in ingresso ed
+# infine un ultimo bit che impedisce al Data path di proseguire
+# con le operazioni di modifica del pH.
+.inputs  RST START PH7 PH6 PH5 PH4 PH3 PH2 PH1 PH0 ERRORE CONTROLLO_NEUTRO
+.outputs FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO RESET INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
+
+.start_kiss
+.i 12       # Numero di segnali di ingresso.
+.o 8        # Numero di segnali di uscita.
+.s 5        # Numero di stati.
+.p 14       # Numero di transizioni.
+.r Reset    # Stato iniziale/di reset.
+
+# Tabella delle transizioni (STT)
+# (ingressi, stato-corrente, stato-prossimo, uscite)
+
+    # Transizioni da Reset
+    1----------- Reset  Reset   000010-0
+    00---------- Reset  Reset   000010-0
+    01--------1- Reset  Errore  010001-0
+    010-------0- Reset  Acido   00010100
+    011-------0- Reset  Basico  00100110
+
+    # Transizione da Errore
+    0----------- Errore Errore  010000-1
+    1----------- Errore Reset   000010-0
+
+    # Transizioni da Acido
+    0----------0 Acido  Acido   00010000
+    0----------1 Acido  Neutro  10000001
+    1----------- Acido  Reset   000010-0
+
+    # Transizioni da Basico
+    0----------0 Basico Basico  00100010
+    0----------1 Basico Neutro  10000011
+    1----------- Basico Reset   000010-0
+
+    # Transizioni da Neutro
+    0----------- Neutro Neutro  100000-1
+    1----------- Neutro Reset   000010-0
+
+.end_kiss
+.end

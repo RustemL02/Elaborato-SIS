@@ -135,33 +135,33 @@ Abbiamo suddiviso l'unità di elaborazione in più sottoproblemi risolti da dell
 
 Il contatore è composto da: un registro, tre multiplexer ed un sommatore ad 8 bit.
 
+![Contatore dei cicli](img/components/counter.svg "Contatore dei cicli"){ width=79% }
+
 > È un componente dedicato esclusivamente al calcolo dell'uscita `NCLK[8]`, mentre gli altri collaborano tra loro sia per determinare i segnali di controllo, che soprattutto per calcolare l'uscita `PH_FINALE[8]`.
 
 Incrementa di `1` il valore memorizzato nel registro ad ogni ciclo ad eccezione dei casi in cui riceve il segnale `STOP = 1`. Invece, quando l'ingresso `RESET` equivale ad `1`, indipendentemente dal valore dell'altro, azzera il valore memorizzato nel registro.
 
-![Contatore dei cicli](img/components/counter.svg "Contatore dei cicli"){ width=75% }
-
 ### Modifica del pH
 
 Il modificatore è composto da: un sommatore, un sottrattore ed un multiplexer ad 8 bit.
+
+![Modificatore del pH](./img/components/modifier.svg "Modificatore del pH"){ width=50% }
 
 Modifica il valore dell'ingresso `PH[8]` in funzione del segnale `TIPO_PH`, cioé:
 
 - nel caso in cui `TIPO_PH` equivale a `0` incrementa il pH di `0,50`;
 - nel caso in cui `TIPO_PH` equivale ad `1` decrementa il pH di `0,25`.
 
-![Modificatore del pH](./img/components/modifier.svg "Modificatore del pH"){ width=55% }
-
 ### Verifica della neutralità
 
 Il componente è composto da: un maggiore ed un minore ad 8 bit ed una porta NOR.
+
+![Verificatore di neutralità](./img/components/neutral.svg "Verificatore di neutralità"){ width=60% }
 
 Verifica il valore dell'ingresso `PH_INIZIALE[8]`, cioè:
 
 - se questo è incluso in `[7,00, 8,00]` allora restituisce `1`, cioè *vero*;
 - altrimenti restituisce `0` cioè *falso*.
-
-![Verificatore di neutralità](./img/components/neutral.svg "Verificatore di neutralità"){ width=60% }
 
 ### Verifica degli errori
 
@@ -172,7 +172,7 @@ Verifica il valore dell'ingresso `PH_INIZIALE[8]`, cioè:
 - se questo è superiore a `14,0`, allora restituisce `1`, cioè *vero*;
 - altrimenti restituisce `0` cioè *falso*.
 
-![Verificatore di errore](./img/components/error.svg "Verificatore di errore"){ width=25% }
+![Verificatore di errore](./img/components/error.svg "Verificatore di errore"){ width=28% }
 
 ### Unità completa
 
@@ -187,14 +187,16 @@ Quando sia il segnale `INIZIO_OPERAZIONE` che `RESET` valgono `0` il circuito co
 - se `RESET` equivale ad `1`, indipendentemente dagli altri ingressi, il circuito restituisce un byte azzerato;
 - oppure, se `INIZIO_OPERAZIONE` vale `1` restituisce il segnale `PH_INIZIALE[8]`;
 
-Questo valore viene quindi analizzato tramite il *Verificatore di errore* per determinare se la codifica è accettabile, viene restituito se il segnale `STOP_OPERAZIONE` equivale ad `1` e viene finalmente memorizzato nel registro. Nel ciclo di clock successivo il circuito utilizza il *Modificatore del pH* per aggiornare il valore, e ancora:
+Questo valore viene quindi analizzato tramite il *Verificatore di errore* per determinare se la codifica è accettabile, viene restituito se il segnale `STOP_OPERAZIONE` equivale ad `1` e viene finalmente memorizzato nel registro.
+
+Nel ciclo di clock successivo il circuito utilizza il *Modificatore del pH* per aggiornare il valore, e ancora:
 
 - quando il valore del segnale di stato `STOP_OPERAZIONE` equivale a `0` restituisce il valore modificato;
 - altrimenti se equivale ad `1` restituisce il valore memorizzato.
 
 Infine usufruisce del *Verificatore di neutralità* per determinare se il valore è neutro ed indirizza il nuovo risultato all'interno dei multiplexer iniziali.
 
-> Il segnale di uscita `PH_FINALE[8]` non viene restituito finché il segnale `STOP_OPERAZIONE` non quivale ad `1`: a quel punto il risultato diviene il valore restituito dai multiplexer iniziali.
+Il segnale di uscita `PH_FINALE[8]` non viene restituito finché il segnale `STOP_OPERAZIONE` non quivale ad `1`: in quel caso restituisce il valore prodotto dai multiplexer iniziali.
 
 #### Contatore
 
@@ -214,12 +216,60 @@ I segnali utilizzati dall'unità a stati sono i seguenti in ordine di presentazi
 |             | `TIPO_PH`            |                      |
 |             | `STOP_OPERAZIONE`    |                      |
 
-![Unità di elaborazione](./img/data-path.jpg "Unità di elaborazione"){ width=80% }
+![Unità di elaborazione](./img/data-path.jpg "Unità di elaborazione"){ width=95% }
+
+Il registro ad 1 bit che memorizza il segnale `TIPO_PH` è presente per evitare di creare un ciclo all'interno del circuito e renderlo non deterministico.
 
 Sostituendo il contenuto dei componenti all'interno del corpo principale otteniamo il seguente circuito:
 
-```c
-// Inserire data-path completo.
+![Unità di elaborazione](./img/data-path-full.jpg "Unità di elaborazione"){ width=100% }
+
+Il *Contatore dei cicli* invece è un componente autonomo e abbiamo scelto di non includerlo in questa immagine per problemi di spazio, è comunque presente all'interno del circuito.
+
+## Simulazioni di esempio
+
+Dopo aver progettato i due sottosistemi abbiamo provato alcuni flussi di esecuzione: il primo vede come ingresso un pH pari a `5,75` che quindi impiega 4 cicli per completare l'operazione con un pH finale di `5,75`; nel secondo invece abbiamo tentato di inserire un pH non valido e dopo aver segnalato l'errore non ha elaborato oltre.
+
+```sh
+# Inserendo RST = 0, START = 1, PH = 5,75.
+sis> simulate 0 1 0 1 0 1 1 1 0 0 
+
+# Otteniamo VALVOLA_BASICO = 1.
+Network simulation:
+Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 00101110000000001010
+
+# Inserendo tutti i valori a 0.
+sis> simulate 0 0 0 0 0 0 0 0 0 0
+
+# Prosegue con l'elaborazione.
+Network simulation:
+Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 00110010000000010010
+
+# Inserendo tutti i valori a 0.
+sis> simulate 0 0 0 0 0 0 0 0 0 0
+
+# Prosegue con l'elaborazione.
+Network simulation:
+Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 00110110000000011010
+
+# Inserendo tutti i valori a 0.
+sis> simulate 0 0 0 0 0 0 0 0 0 0
+
+# Prosegue con l'elaborazione.
+Network simulation:
+Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 00111010000000100010
+
+# Inserendo tutti i valori a 0.
+sis> simulate 0 0 0 0 0 0 0 0 0 0
+
+# Otteniamo FINE_OPERAZIONE = 1, PH = 7,25, NCLK = 4.
+Network simulation:
+Outputs: 1 0 0 0 0 1 1 1 0 1 0 0 0 0 0 0 0 1 0 0
+Next state: 00111010000000100001
 ```
 
 <!-- 

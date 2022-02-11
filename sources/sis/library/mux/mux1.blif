@@ -1,0 +1,15 @@
+# Seleziona tra i due bit A e B.
+.model MUX1
+
+# Accetta tre input: un bit selettore e due bit
+# tra cui scegliere.
+# Risponde con A se SEL = 0, altrimenti B.
+.inputs  SEL A B
+.outputs OUT
+
+# Nodo che seleziona il bit di uscita.
+.names SEL A B OUT
+    01- 1
+    1-1 1
+
+.end

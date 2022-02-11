@@ -1,0 +1,54 @@
+# Determina se il byte A è maggiore del byte B.
+# Assume che i due byte siano codificati in
+# modulo.
+.model GT8
+
+# Accetta due input: due byte da elaborare.
+# Risponde con UNO se il primo byte è maggiore
+# del secondo, altrimenti ZERO.
+.inputs  A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0
+.outputs RES
+
+# Schiera di 8 xor da un singolo bit che
+# permettono di comprendere quali bit di A
+# sono diversi da quelli di B.
+.subckt XOR A=A7 B=B7 RES=X7
+.subckt XOR A=A6 B=B6 RES=X6
+.subckt XOR A=A5 B=B5 RES=X5
+.subckt XOR A=A4 B=B4 RES=X4
+.subckt XOR A=A3 B=B3 RES=X3
+.subckt XOR A=A2 B=B2 RES=X2
+.subckt XOR A=A1 B=B1 RES=X1
+.subckt XOR A=A0 B=B0 RES=X0
+
+# Se sia l'xor tra A e B che A stesso equivalgono ad UNO,
+# significa che:
+#
+#       "B = !A" => "B = !1" => "B = 0"
+#
+# in altre parole, se al primo bit di A e B si verifica questa
+# condizione, possiamo affermare che A è maggiore di B, al contrario
+# controlliamo il bit successivo, ponendo il primo xor a ZERO:
+#       
+#       A1 A0 X1 X0 RES
+#       1  -  1  -  1
+#       -  1  0  1  1
+#  
+# Ripetendo questa operazione per ogni bit concludiamo se A è
+# maggiore di B, oppure no.
+
+# Nodo che confronta tutti i bit di A con le xor.
+.names A7 A6 A5 A4 A3 A2 A1 A0 X7 X6 X5 X4 X3 X2 X1 X0 RES
+    1-------1------- 1
+    -1------01------ 1
+    --1-----001----- 1
+    ---1----0001---- 1
+    ----1---00001--- 1
+    -----1--000001-- 1
+    ------1-0000001- 1
+    -------100000001 1
+
+.end
+
+# Ricerca del modello XOR.
+.search xor.blif

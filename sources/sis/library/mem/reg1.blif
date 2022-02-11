@@ -1,0 +1,12 @@
+# Memorizza il singolo bit A.
+.model REG1
+
+# Accetta un input: un bit da memorizzare.
+# Risponde con il bit precedentemente memorizzato.
+.inputs  A
+.outputs MEM
+
+# Aggiorna il bit memorizzato.
+.latch A MEM re NIL 0
+
+.end

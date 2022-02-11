@@ -1,0 +1,11 @@
+# Produce un bit costante ad UNO.
+.model ONE
+
+# Risponde con un bit costante.
+.outputs RES
+
+# Nodo che produce il bit costante.
+.names RES
+    1
+
+.end

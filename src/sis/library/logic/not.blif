@@ -1,0 +1,13 @@
+.model NOT
+
+.inputs  A
+.outputs RES
+
+# Tabella di verità
+# A R
+# 0 1
+# 1 0
+.names A RES
+    0 1
+
+.end

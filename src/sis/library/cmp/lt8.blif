@@ -1,0 +1,30 @@
+.model LT8
+
+.inputs  A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0
+.outputs RES
+
+.subckt XOR A=A7 B=B7 RES=X7
+.subckt XOR A=A6 B=B6 RES=X6
+.subckt XOR A=A5 B=B5 RES=X5
+.subckt XOR A=A4 B=B4 RES=X4
+.subckt XOR A=A3 B=B3 RES=X3
+.subckt XOR A=A2 B=B2 RES=X2
+.subckt XOR A=A1 B=B1 RES=X1
+.subckt XOR A=A0 B=B0 RES=X0
+
+# Ipotizzando che B e XOR(A, B) valgano 1, possiamo
+# dedurre che: "A = !B" => "A = !1" => "A = 0", perciò
+# "A < B".
+.names B7 B6 B5 B4 B3 B2 B1 B0 X7 X6 X5 X4 X3 X2 X1 X0 RES
+    1-------1------- 1
+    -1------01------ 1
+    --1-----001----- 1
+    ---1----0001---- 1
+    ----1---00001--- 1
+    -----1--000001-- 1
+    ------1-0000001- 1
+    -------100000001 1
+
+.end
+
+.search xor.blif

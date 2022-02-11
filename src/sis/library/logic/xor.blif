@@ -1,0 +1,16 @@
+.model XOR
+
+.inputs  A B
+.outputs RES
+
+# Tabella di verità
+# AB R
+# 00 0
+# 01 1
+# 10 1
+# 11 0
+.names A B RES
+    01 1
+    10 1
+
+.end

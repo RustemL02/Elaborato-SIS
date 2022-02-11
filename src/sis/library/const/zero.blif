@@ -1,0 +1,9 @@
+.model ZERO
+
+.outputs RES
+
+# Questo nodo produce costantemente 0.
+.names RES
+    0
+
+.end

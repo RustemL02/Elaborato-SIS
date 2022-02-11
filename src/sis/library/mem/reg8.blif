@@ -1,0 +1,17 @@
+.model REG8
+
+.inputs  A7 A6 A5 A4 A3 A2 A1 A0
+.outputs MEM7 MEM6 MEM5 MEM4 MEM3 MEM2 MEM1 MEM0
+
+.subckt REG1 A=A7 MEM=MEM7
+.subckt REG1 A=A6 MEM=MEM6
+.subckt REG1 A=A5 MEM=MEM5
+.subckt REG1 A=A4 MEM=MEM4
+.subckt REG1 A=A3 MEM=MEM3
+.subckt REG1 A=A2 MEM=MEM2
+.subckt REG1 A=A1 MEM=MEM1
+.subckt REG1 A=A0 MEM=MEM0
+
+.end
+
+.search reg1.blif

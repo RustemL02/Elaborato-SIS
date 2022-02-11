@@ -1,0 +1,10 @@
+.model MUX1
+
+.inputs  SEL A B
+.outputs OUT
+
+.names SEL A B OUT
+    01- 1
+    1-1 1
+
+.end

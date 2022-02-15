@@ -2,46 +2,46 @@
 .inputs RST START PH_INIZIALE7 PH_INIZIALE6 PH_INIZIALE5 PH_INIZIALE4 \
 PH_INIZIALE3 PH_INIZIALE2 PH_INIZIALE1 PH_INIZIALE0 NEUTRO
 .outputs FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO RESET \
-INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
+INIZIO_OPERAZIONE TIPO_PH
 .latch    FINE_OPERAZIONE LatchOut_v11   0
-.latch    [28] LatchOut_v12   0
-.latch    [29] LatchOut_v13   0
+.latch    [404] LatchOut_v12   0
+.latch    [405] LatchOut_v13   0
 .start_kiss
 .i 11
-.o 8
+.o 7
 .p 30
 .s 5
 .r Reset
-00--------- Reset Reset 000010-0
-1---------- Reset Reset 000010-0
-011110---1- Reset Errore 010001-0
-011110--1-- Reset Errore 010001-0
-011110-1--- Reset Errore 010001-0
-0111101---- Reset Errore 010001-0
-011111----- Reset Errore 010001-0
-010--0----- Reset Acido 00010100
-010-0------ Reset Acido 00010100
-0100------- Reset Acido 00010100
-010111----- Reset Neutro 100001-0
-0110000000- Reset Neutro 100001-0
-011000---1- Reset Basico 00100110
-011000--1-- Reset Basico 00100110
-011000-1--- Reset Basico 00100110
-0110001---- Reset Basico 00100110
-011001----- Reset Basico 00100110
-01101------ Reset Basico 00100110
-01110------ Reset Basico 00100110
-0111100000- Reset Basico 00100110
-0---------- Errore Errore 010000-1
-1---------- Errore Reset 000010-0
-0---------0 Acido Acido 00010000
-0---------1 Acido Neutro 10000001
-1---------- Acido Reset 000010-0
-0---------- Neutro Neutro 100000-1
-1---------- Neutro Reset 000010-0
-0---------0 Basico Basico 00100010
-0---------1 Basico Neutro 10000011
-1---------- Basico Reset 000010-0
+00--------- Reset Reset 000010-
+1---------- Reset Reset 000010-
+011110---1- Reset Errore 010001-
+011110--1-- Reset Errore 010001-
+011110-1--- Reset Errore 010001-
+0111101---- Reset Errore 010001-
+011111----- Reset Errore 010001-
+010--0----- Reset Acido 0001010
+010-0------ Reset Acido 0001010
+0100------- Reset Acido 0001010
+010111----- Reset Neutro 100001-
+0110000000- Reset Neutro 100001-
+011000---1- Reset Basico 0010011
+011000--1-- Reset Basico 0010011
+011000-1--- Reset Basico 0010011
+0110001---- Reset Basico 0010011
+011001----- Reset Basico 0010011
+01101------ Reset Basico 0010011
+01110------ Reset Basico 0010011
+0111100000- Reset Basico 0010011
+0---------- Errore Errore 010000-
+1---------- Errore Reset 000010-
+0---------0 Acido Acido 0001000
+0---------1 Acido Neutro 1000000
+1---------- Acido Reset 000010-
+0---------- Neutro Neutro 100000-
+1---------- Neutro Reset 000010-
+0---------0 Basico Basico 0010001
+0---------1 Basico Neutro 1000001
+1---------- Basico Reset 000010-
 .end_kiss
 .latch_order LatchOut_v11 LatchOut_v12 LatchOut_v13
 .code Reset 000
@@ -49,61 +49,60 @@ INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
 .code Acido 001
 .code Neutro 111
 .code Basico 011
-.names VALVOLA_BASICO RESET [28]
+.names VALVOLA_BASICO RESET [404]
 00 1
-.names ERRORE_SENSORE RESET [29]
+.names ERRORE_SENSORE RESET [405]
 00 1
-.names LatchOut_v12 LatchOut_v13 [28] STOP_OPERAZIONE [55] FINE_OPERAZIONE
--1-1- 1
-0-1-1 1
-.names PH_INIZIALE7 LatchOut_v12 [67] [68] [72] ERRORE_SENSORE
+.names RST NEUTRO LatchOut_v11 LatchOut_v13 VALVOLA_BASICO RESET \
+INIZIO_OPERAZIONE [429] FINE_OPERAZIONE
+0-1----- 1
+-1-1-0-- 1
+----0-11 1
+.names PH_INIZIALE7 LatchOut_v12 [447] [448] [452] ERRORE_SENSORE
 -1-1- 1
 1-011 1
-.names RESET TIPO_PH STOP_OPERAZIONE VALVOLA_ACIDO
-010 1
-.names PH_INIZIALE7 NEUTRO LatchOut_v12 RESET INIZIO_OPERAZIONE [74] \
+.names LatchOut_v12 LatchOut_v13 FINE_OPERAZIONE RESET TIPO_PH VALVOLA_ACIDO
+0---1 1
+-1001 1
+.names PH_INIZIALE7 NEUTRO LatchOut_v12 RESET INIZIO_OPERAZIONE [454] \
 VALVOLA_BASICO
 0---11 1
 -0000- 1
 .names RST START LatchOut_v12 LatchOut_v13 RESET
 1--- 1
 -000 1
-.names LatchOut_v12 [68] INIZIO_OPERAZIONE
+.names LatchOut_v12 [448] INIZIO_OPERAZIONE
 01 1
-.names LatchOut_v12 ERRORE_SENSORE INIZIO_OPERAZIONE [55] TIPO_PH
+.names LatchOut_v12 ERRORE_SENSORE INIZIO_OPERAZIONE [429] TIPO_PH
 1--- 1
 -010 1
-.names RST NEUTRO LatchOut_v11 LatchOut_v12 LatchOut_v13 STOP_OPERAZIONE
-0-1-- 1
-01--1 1
-0--10 1
-.names PH_INIZIALE7 PH_INIZIALE6 PH_INIZIALE5 [72] [55]
+.names PH_INIZIALE7 PH_INIZIALE6 PH_INIZIALE5 [452] [429]
 0--- 1
 -000 1
-.names PH_INIZIALE6 PH_INIZIALE5 [67]
+.names PH_INIZIALE6 PH_INIZIALE5 [447]
 0- 1
 -0 1
-.names LatchOut_v13 RESET [68]
+.names LatchOut_v13 RESET [448]
 00 1
-.names PH_INIZIALE4 PH_INIZIALE3 PH_INIZIALE2 PH_INIZIALE1 PH_INIZIALE0 [72]
+.names PH_INIZIALE4 PH_INIZIALE3 PH_INIZIALE2 PH_INIZIALE1 PH_INIZIALE0 [452]
 1---- 1
 -1--- 1
 --1-- 1
 ---1- 1
 ----1 1
-.names PH_INIZIALE4 [67] [74]
+.names PH_INIZIALE4 [447] [454]
 0- 1
 -1 1
 .exdc 
 .inputs RST START PH_INIZIALE7 PH_INIZIALE6 PH_INIZIALE5 PH_INIZIALE4 \
 PH_INIZIALE3 PH_INIZIALE2 PH_INIZIALE1 PH_INIZIALE0 NEUTRO LatchOut_v11 \
 LatchOut_v12 LatchOut_v13
-.outputs [28] [29] FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO \
-RESET INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
-.names LatchOut_v11 LatchOut_v12 LatchOut_v13 [28]
+.outputs [404] [405] FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO \
+VALVOLA_BASICO RESET INIZIO_OPERAZIONE TIPO_PH
+.names LatchOut_v11 LatchOut_v12 LatchOut_v13 [404]
 10- 1
 1-0 1
-.names LatchOut_v11 LatchOut_v12 LatchOut_v13 [29]
+.names LatchOut_v11 LatchOut_v12 LatchOut_v13 [405]
 10- 1
 1-0 1
 .names LatchOut_v11 LatchOut_v12 LatchOut_v13 FINE_OPERAZIONE
@@ -137,7 +136,4 @@ LatchOut_v13 TIPO_PH
 --111---1---0 1
 --111----1--0 1
 --10000000--0 1
-.names LatchOut_v11 LatchOut_v12 LatchOut_v13 STOP_OPERAZIONE
-10- 1
-1-0 1
 .end

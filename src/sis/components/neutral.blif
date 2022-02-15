@@ -7,10 +7,14 @@
 .subckt ONE  RES=1
 
 # Determina se il byte in ingresso è minore di 7,00.
-.subckt LT8 A7=VAL7 A6=VAL6 A5=VAL5 A4=VAL4 A3=VAL3 A2=VAL2 A1=VAL1 A0=VAL0 B7=0 B6=1 B5=1 B4=1 B3=0 B2=0 B1=0 B0=0 RES=LT
+.subckt LT8 A7=VAL7 A6=VAL6 A5=VAL5 A4=VAL4 A3=VAL3 A2=VAL2 A1=VAL1 A0=VAL0 \
+            B7=0    B6=1    B5=1    B4=1    B3=0    B2=0    B1=0    B0=0    \
+            RES=LT
 
 # Determina se il byte in ingresso è maggiore di 8,00.
-.subckt GT8 A7=VAL7 A6=VAL6 A5=VAL5 A4=VAL4 A3=VAL3 A2=VAL2 A1=VAL1 A0=VAL0 B7=1 B6=0 B5=0 B4=0 B3=0 B2=0 B1=0 B0=0 RES=GT
+.subckt GT8 A7=VAL7 A6=VAL6 A5=VAL5 A4=VAL4 A3=VAL3 A2=VAL2 A1=VAL1 A0=VAL0 \
+            B7=1    B6=0    B5=0    B4=0    B3=0    B2=0    B1=0    B0=0    \
+            RES=GT
 
 # Se il valore non rispetta alcuna delle condizioni
 # significa che il byte è compreso nell'intevallo

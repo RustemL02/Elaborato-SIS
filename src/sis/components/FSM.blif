@@ -1,42 +1,65 @@
 .model FSM
 
-.inputs  RST START PH_INIZIALE7 PH_INIZIALE6 PH_INIZIALE5 PH_INIZIALE4 PH_INIZIALE3 PH_INIZIALE2 PH_INIZIALE1 PH_INIZIALE0 ERRORE NEUTRO
-.outputs FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO RESET INIZIO_OPERAZIONE TIPO_PH STOP_OPERAZIONE
+.inputs  RST START \
+         PH_INIZIALE7 PH_INIZIALE6 PH_INIZIALE5 PH_INIZIALE4 \
+         PH_INIZIALE3 PH_INIZIALE2 PH_INIZIALE1 PH_INIZIALE0 \
+         NEUTRO
+.outputs FINE_OPERAZIONE ERRORE_SENSORE VALVOLA_ACIDO VALVOLA_BASICO \
+         RESET INIZIO_OPERAZIONE TIPO_PH
 
 .start_kiss
-.i 12       # Numero di segnali di ingresso.
-.o 8        # Numero di segnali di uscita.
+.i 11       # Numero di segnali di ingresso.
+.o 7        # Numero di segnali di uscita.
 .s 5        # Numero di stati.
-.p 14       # Numero di transizioni.
+.p 30       # Numero di transizioni.
 .r Reset    # Stato iniziale/di reset.
 
 # Tabella delle transizioni (STT)
 # (ingressi, stato-corrente, stato-prossimo, uscite)
 
     # Transizioni da Reset
-    1----------- Reset  Reset   000010-0
-    00---------- Reset  Reset   000010-0
-    01--------1- Reset  Errore  010001-0
-    010-------0- Reset  Acido   00010100
-    011-------0- Reset  Basico  00100110
+    00--------- Reset Reset 000010-
+    1---------- Reset Reset 000010-
+
+    011110---1- Reset Errore 010001-
+    011110--1-- Reset Errore 010001-
+    011110-1--- Reset Errore 010001-
+    0111101---- Reset Errore 010001-
+    011111----- Reset Errore 010001-
+
+    010--0----- Reset Acido 0001010
+    010-0------ Reset Acido 0001010
+    0100------- Reset Acido 0001010
+
+    010111----- Reset Neutro 100001-
+    0110000000- Reset Neutro 100001-
+
+    011000---1- Reset Basico 0010011
+    011000--1-- Reset Basico 0010011
+    011000-1--- Reset Basico 0010011
+    0110001---- Reset Basico 0010011
+    011001----- Reset Basico 0010011
+    01101------ Reset Basico 0010011
+    01110------ Reset Basico 0010011
+    0111100000- Reset Basico 0010011
 
     # Transizione da Errore
-    0----------- Errore Errore  010000-1
-    1----------- Errore Reset   000010-0
+    0---------- Errore Errore 010000-
+    1---------- Errore Reset  000010-
 
     # Transizioni da Acido
-    0----------0 Acido  Acido   00010000
-    0----------1 Acido  Neutro  10000001
-    1----------- Acido  Reset   000010-0
+    0---------0 Acido Acido  0001000
+    0---------1 Acido Neutro 1000000
+    1---------- Acido Reset  000010-
 
     # Transizioni da Basico
-    0----------0 Basico Basico  00100010
-    0----------1 Basico Neutro  10000011
-    1----------- Basico Reset   000010-0
+    0---------0 Basico Basico 0010001
+    0---------1 Basico Neutro 1000001
+    1---------- Basico Reset  000010-
 
     # Transizioni da Neutro
-    0----------- Neutro Neutro  100000-1
-    1----------- Neutro Reset   000010-0
+    0---------- Neutro Neutro 100000-
+    1---------- Neutro Reset  000010-
 
 .end_kiss
 .end

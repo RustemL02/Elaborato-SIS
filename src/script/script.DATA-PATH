@@ -1,0 +1,13 @@
+rl DATA-PATH.blif
+
+source script.rugged
+print_stats
+
+source script.rugged
+print_stats
+
+source script.rugged
+print_stats
+
+source script.rugged
+print_stats

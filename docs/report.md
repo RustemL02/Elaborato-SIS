@@ -6,7 +6,7 @@ Abbiamo sviluppato un circuito che controlla un meccanismo chimico, il cui scopo
 
 Il valore del pH viene espresso in valori compresi tra `0,00` e `14,0`: nell'intervallo `[0,00, 7,00)` si trovano i valori acidi, mentre in quello `(8,00, 14,0]` si trovano i valori basici, infine i valori inclusi in `[7,00, 8,00]` sono considerati neutrali. Tutti gli altri valori non sono accettabili e comportano un errore.
 
-Il sistema è quindi dotato di due valvole: la prima può *decrementare* il valore del pH di `0.25` in un singolo ciclo di clock, mentre la seconda lo può *incrementare* di `0.50` nello stesso periodo di tempo.
+Il sistema è quindi dotato di due valvole: la prima può *decrementare* il valore del pH di `0.50` in un singolo ciclo di clock, mentre la seconda lo può *incrementare* di `0.25` nello stesso periodo di tempo.
 
 ![Illustrazione del circuito](./img/abstract-system.jpg "Illustrazione astratta del sistema."){ width=65% }
 
@@ -54,13 +54,12 @@ I segnali di stato utilizzati sono i seguenti:
 | `RESET`               | Ordina all'elaboratore di reinizializzare i valori.                                     |
 | `INIZIO_OPER.`        | Comunica all'elaboratore che è appena stato inserito un pH.                             |
 | `TIPO_PH`             | Permette all'elaboratore di determinare come modificare il pH.                          |
-| `STOP_OPER.`          | Comunica all'elaboratore di non modificare i valori memorizzati.                        |
+| `FINE_OPER.`          | Comunica all'elaboratore di non modificare i valori memorizzati.                        |
 
 I segnali di controllo utilizzati sono i seguenti:
 
 | **Segnale**           | **Descrizione**                                                                         |
 | --------------------: | :-------------------------------------------------------------------------------------- |
-| `ERRORE`              | Comunica alla macchina che il valore del pH non è accettabile.                          |
 | `NEUTRO`              | Comunica alla macchina che il valore del pH ha raggiunto la neutralità.                 |
 
 ## Macchina a stati finiti (FSM)
@@ -77,9 +76,16 @@ Abbiamo individuato cinque stati per questa macchina, cioè:
 
 Lo stato iniziale della macchina è quello di *Reset*, da questo può spostarsi solamente quando riceve il segnale `START = 1`, in quel caso:
 
+- quando il valore del pH è superiore a `14` transita nello stato di *Errore*;
+- quando il valore del pH è minore stretto di `7` transita nello stato di *Acido*;
+- quando il valore del pH è compreso in `[7, 8]` transita nello stato di *Neutro*;
+- quando il valore del pH è maggiore stretto di `8` transita nello stato di *Basico*;
+
+<!--
 - Quando il segnale di controllo `ERRORE` vale `1` transita nello stato di *Errore*;
 - Quando il bit più significativo del segnale `PH[8]` vale `0` e non sono presenti errori, transita nello stato *Acido*;
 - Quando il bit più significatico del segnale `PH[8]` vale `1` e non sono presenti errori, transita nello stato *Basico*.
+-->
 
 La macchina si sposta nello stato *Neutro* quando il segnale di controllo `NEUTRO` vale `1`, infine, da ognuno degli stati può tornare a quello iniziale quando riceve il segnale `RST = 1`.
 
@@ -94,10 +100,10 @@ I segnali utilizzati dalla macchina a stati sono i seguenti in ordine di present
 |             | `PH_INIZIALE[8]`     | `VALVOLA_ACIDO`      |
 |             |                      | `VALVOLA_BASICO`     |
 |             |                      |                      |
-| **Interni** | `ERRORE`             | `RESET`              |
-|             | `NEUTRO`             | `INIZIO_OPERAZIONE`  |
+| **Interni** | `NEUTRO`             | `RESET`              |
+|             |                      | `INIZIO_OPERAZIONE`  |
 |             |                      | `TIPO_PH`            |
-|             |                      | `STOP_OPERAZIONE`    |
+|             |                      | `FINE_OPERAZIONE`    |
 
 ### Grafo delle transizioni (STG)
 
@@ -107,19 +113,22 @@ Replicando il comportamento sopra descritto, abbiamo quindi costruito il seguent
 
 #### Transizione di esempio
 
-La transizione dallo stato *Reset* verso *Basico* avviene quando:
+La transizione dallo stato *Reset* verso *Acido* avviene quando:
 
 - il segnale `RST` equivale a `0`;
 - il segnale `START` equivale ad `1`;
-- il bit più significativo di `PH_INIZIALE[8]` vale `1`;
+- il valore del `PH_INIZIALE[8]` è in`[0, 7)`;
+<!-- - il bit più significativo di `PH_INIZIALE[8]` vale `1`; -->
 - il segnale `ERRORE` equivale a `0`.
 
-Viene ignorato il segnale `NEUTRO` perché il circuito deve prima memorizzare il valore e solo in un ciclo successivo è in grado di rilevare la sua eventuale neutralità; infatti la macchina a stati non è in grado di raggiungere lo stato *Neutro* senza prima transitare per *Acido* o *Basico*.
+<!-- Viene ignorato il segnale `NEUTRO` perché il circuito deve prima memorizzare il valore e solo in un ciclo successivo è in grado di rilevare la sua eventuale neutralità; infatti la macchina a stati non è in grado di raggiungere lo stato *Neutro* senza prima transitare per *Acido* o *Basico*. -->
 
 > Nel codice sorgente tale transizione viene descritta come:
 >
 > ```java
-> 011-------0- Reset Basico 00100110
+> 010--0----- Reset Acido     00010100
+> 010-0------ Reset Acido     00010100
+> 0100------- Reset Acido     00010100
 > ```
 
 ## Unità di elaborazione (Data path)
@@ -129,7 +138,7 @@ Abbiamo suddiviso l'unità di elaborazione in più sottoproblemi risolti da dell
 1. *Contatore dei cicli*: memorizza ed incrementa il numero di cicli impiegati;
 2. *Modificatore del pH*: aggiorna il valore del pH;
 3. *Verificatore di neutralità*: determina se il valore del pH è interno a `[7,00, 8,00]`;
-4. *Verificatore di errore*: determina se il valore del pH è superiore a `14,0`.
+<!-- 4. *Verificatore di errore*: determina se il valore del pH è superiore a `14,0`. -->
 
 ### Conteggio dei cicli
 
@@ -150,7 +159,7 @@ Il modificatore è composto da: un sommatore, un sottrattore ed un multiplexer a
 Modifica il valore dell'ingresso `PH[8]` in funzione del segnale `TIPO_PH`, cioé:
 
 - nel caso in cui `TIPO_PH` equivale a `0` incrementa il pH di `0,50`;
-- nel caso in cui `TIPO_PH` equivale ad `1` decrementa il pH di `0,25`.
+- nel caso in cui `TIPO_PH` equivale ad `1` decrementa il pH di `0,20`.
 
 ### Verifica della neutralità
 
@@ -163,7 +172,7 @@ Verifica il valore dell'ingresso `PH_INIZIALE[8]`, cioè:
 - se questo è incluso in `[7,00, 8,00]` allora restituisce `1`, cioè *vero*;
 - altrimenti restituisce `0` cioè *falso*.
 
-### Verifica degli errori
+<!-- ### Verifica degli errori
 
 Il componente è composto da un maggiore ad 8 bit.
 
@@ -172,7 +181,7 @@ Verifica il valore dell'ingresso `PH_INIZIALE[8]`, cioè:
 - se questo è superiore a `14,0`, allora restituisce `1`, cioè *vero*;
 - altrimenti restituisce `0` cioè *falso*.
 
-![Verificatore di errore](./img/components/error.svg "Verificatore di errore"){ width=28% }
+![Verificatore di errore](./img/components/error.svg "Verificatore di errore"){ width=28% } -->
 
 ### Unità completa
 
@@ -211,8 +220,8 @@ I segnali utilizzati dall'unità a stati sono i seguenti in ordine di presentazi
 | **Esterni** | `PH_INIZIALE[8]`     | `PH_FINALE[8]`       |
 |             |                      | `NCLK[8]`            |
 |             |                      |                      |
-| **Interni** | `RESET`              | `ERRORE`             |
-|             | `INIZIO_OPERAZIONE`  | `NEUTRO`             |
+| **Interni** | `RESET`              | `NEUTRO`             |
+|             | `INIZIO_OPERAZIONE`  |                      |
 |             | `TIPO_PH`            |                      |
 |             | `STOP_OPERAZIONE`    |                      |
 
@@ -228,7 +237,7 @@ Il *Contatore dei cicli* invece è un componente autonomo e abbiamo scelto di no
 
 ## Simulazioni di esempio
 
-Dopo aver progettato i due sottosistemi abbiamo provato alcuni flussi di esecuzione: il primo vede come ingresso un pH pari a `5,75` che quindi impiega 4 cicli per completare l'operazione con un pH finale di `5,75`; nel secondo invece abbiamo tentato di inserire un pH non valido e dopo aver segnalato l'errore non ha elaborato oltre.
+<!-- Dopo aver progettato i due sottosistemi abbiamo provato alcuni flussi di esecuzione: il primo vede come ingresso un pH pari a `5,75` che quindi impiega 4 cicli per completare l'operazione con un pH finale di `5,75`; nel secondo invece abbiamo tentato di inserire un pH non valido e dopo aver segnalato l'errore non ha elaborato oltre. -->
 
 ### Esempio 1
 

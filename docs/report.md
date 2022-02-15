@@ -159,7 +159,7 @@ Il modificatore è composto da: un sommatore, un sottrattore ed un multiplexer a
 Modifica il valore dell'ingresso `PH[8]` in funzione del segnale `TIPO_PH`, cioé:
 
 - nel caso in cui `TIPO_PH` equivale a `0` incrementa il pH di `0,50`;
-- nel caso in cui `TIPO_PH` equivale ad `1` decrementa il pH di `0,20`.
+- nel caso in cui `TIPO_PH` equivale ad `1` decrementa il pH di `0,25`.
 
 ### Verifica della neutralità
 
@@ -237,70 +237,70 @@ Il *Contatore dei cicli* invece è un componente autonomo e abbiamo scelto di no
 
 ## Simulazioni di esempio
 
-<!-- Dopo aver progettato i due sottosistemi abbiamo provato alcuni flussi di esecuzione: il primo vede come ingresso un pH pari a `5,75` che quindi impiega 4 cicli per completare l'operazione con un pH finale di `5,75`; nel secondo invece abbiamo tentato di inserire un pH non valido e dopo aver segnalato l'errore non ha elaborato oltre. -->
+Dopo aver progettato i due sottosistemi abbiamo provato alcuni flussi di esecuzione: il primo vede come ingresso un pH pari a `9,25` che quindi impiega 3 cicli per completare l'operazione con un pH finale di `7,75`; nel secondo invece abbiamo tentato di inserire un pH non valido e dopo aver segnalato l'errore non ha elaborato oltre.
 
 ### Esempio 1
 
 ```sh
-# Inserendo RST = 0, START = 1, PH = 5,75.
-sis> simulate 0 1 0 1 0 1 1 1 0 0 
+# Inserendo RST = 0, START = 1, PH = 9,25.
+sis> sim 0 1 1 0 0 1 0 1 0 0
 
-# Otteniamo VALVOLA_BASICO = 1.
+# Otteniamo VALVOLA_ACIDO = 1.
 Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00101110000000001010
-
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
+Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 11001010000000000011
 
 # Prosegue con l'elaborazione.
-Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00110010000000010010
+sis> sim 0 0 0 0 0 0 0 0 0 0
 
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
+# Otteniamo VALVOLA_ACIDO = 1.
+Network simulation:
+Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 11000110000000001011
 
 # Prosegue con l'elaborazione.
-Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00110110000000011010
+sis> sim 0 0 0 0 0 0 0 0 0 0
 
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
+# Otteniamo VALVOLA_ACIDO = 1.
+Network simulation:
+Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 11000010000000010011
 
 # Prosegue con l'elaborazione.
-Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00111010000000100010
+sis> sim 0 0 0 0 0 0 0 0 0 0
 
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
-
-# Otteniamo FINE_OPERAZIONE = 1, PH = 7,25, NCLK = 4.
+# Otteniamo VALVOLA_ACIDO = 1.
 Network simulation:
-Outputs: 1 0 0 0 0 1 1 1 0 1 0 0 0 0 0 0 0 1 0 0
-Next state: 00111010000000100001
+Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 10111110000000011011
+
+# Prosegue con l'elaborazione.
+sis> sim 0 0 0 0 0 0 0 0 0 0
+
+# Otteniamo FINE_OPERAZIONE = 1, PH = 7,75, NCLK = 3.
+Network simulation:
+Outputs: 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 1 1
+Next state: 10111110000000011111
 ```
 
 ### Esempio 2
 
 ```sh
-# Inserendo RST = 0, START = 1, PH = 14.0625.
-sis> sim 0 1 1 1 1 0 0 0 0 1
+# Inserendo RST = 0, START = 1, PH = 15.9375.
+sis> sim 0 1 1 1 1 1 1 1 1 1
 
 # Otteniamo ERRORE_SENSORE = 1.
 Network simulation:
 Outputs: 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 01110000100000001110
+Next state: 01111111100000000010
 
 # Inserendo tutti i valori a 0.
-sis> sim 0 0 0 0 0 0 0 0 0 0 
+sis> sim 0 0 0 0 0 0 0 0 0 0
 
-# Otteniamo ERRORE_SENSORE = 1, PH = 14.0625.
+# Otteniamo ERRORE_SENSORE = 1, PH = 15.9375.
 Network simulation:
-Outputs: 0 1 0 0 1 1 1 0 0 0 0 1 0 0 0 0 0 0 0 1
-Next state: 11110000100000001110
+Outputs: 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Next state: 10000001100000001010
 ```
 
 <!--

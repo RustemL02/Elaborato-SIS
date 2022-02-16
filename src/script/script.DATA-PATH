@@ -1,6 +1,9 @@
 rl DATA-PATH.blif
 
-source script.rugged
+eliminate -1
+print_stats
+
+full_simplify
 print_stats
 
 source script.rugged
@@ -9,5 +12,5 @@ print_stats
 source script.rugged
 print_stats
 
-source script.rugged
+fx
 print_stats

@@ -4,16 +4,12 @@ state_minimize stamina
 
 state_assign jedi
 
-stg_to_network
-
-source script.rugged
+full_simplify
 print_stats
 
 source script.rugged
 print_stats
 
-source script.rugged
-print_stats
 
-source script.rugged
+fx
 print_stats

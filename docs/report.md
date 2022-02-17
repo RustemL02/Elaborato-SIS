@@ -390,10 +390,16 @@ Durante la progettazione abbiamo preso le seguenti scelte progettuali:
 
 <!-- Dopo l'inserimento del pH la macchina a stati decide in tutta autonomia in che stato transitare in base alla codifica: questo perché in ingresso -->
 
-1. Durante l'inserimento può essere presente un pH inaccettabile o già neutro e l'elaboratore lo memorizza solo il ciclo dopo. Perciò è la macchina a stati a decidere in totale autonomia in quale stato transitare in base al valore.
+1. Durante l'inserimento può essere presente un pH inaccettabile o già neutro e l'elaboratore lo memorizza solo il ciclo dopo. Perciò è la macchina a stati a decidere in totale autonomia in quale stato transitare in base al valore;
 
-2. Dopo che la macchina ha raggiunto gli stati *Acido* e *Basico* utilizza un bit di cotrollo chiamato `NEUTRO` per decidere se raggiungere lo stato *Neutro*.
+2. Dopo che la macchina ha raggiunto gli stati *Acido* e *Basico* utilizza un bit di cotrollo chiamato `NEUTRO` per decidere se raggiungere lo stato *Neutro*;
 
-3. Per semplificare l'implementazione dell'unità di elaborazione, abbiamo suddiviso il codice sorgente in più modelli distinti in base al problema che risolvono: ad esempio il file "*counter.blif*" si occupa esclusivamente dell'uscita `NCLK[8]` e viene poi utilizzato dentro il file "*DATA-PATH.blif*".
+3. Abbiamo usufruito di un registro ad un bit in più nell'elaboratore per evitare di causare un ciclo all'interno del circuito;
 
-4. Abbiamo usufruito di un registro ad un bit in più nell'elaboratore per evitare di causare un ciclo all'interno del circuito.
+4. Per semplificare l'implementazione dell'unità di elaborazione, abbiamo suddiviso il codice sorgente in più modelli distinti in base al problema che risolvono: ad esempio il file "*counter.blif*" si occupa esclusivamente dell'uscita `NCLK[8]` e viene poi utilizzato dentro il file "*DATA-PATH.blif*";
+
+5. Il contatore viene inizializzato sia quando il circuito riceve `RST = 1` sia quando riceve `START = 1`;
+
+6. In qualsiasi stato diverso da *Reset* anche se giunge il segnale `START = 1`, il circuito continua l'elaborazione, l'unico modo per interromperla è inviare il segnale `RST = 1`;
+
+7. Quando viene inserito un pH inaccettabile, il circuito risponde semplicemente con `ERRORE_SENSORE = 1`, invece quando viene inserito un valore già neutro dapprima solo con `FINE_OPERAZIONE = 1` e dal ciclo successivo in poi anche con la codifica inserita e `NCLK[8] = 0`.

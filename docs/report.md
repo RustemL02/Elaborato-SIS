@@ -184,7 +184,7 @@ Ecco due esempi di esecuzione del circuito.
 Inserendo un pH pari a `9,25` e specificando il segnale `START = 1` otteniamo come risultato semplicemente `VALVOLA_ACIDO = 1`.
 
 > ```java
-> sis> sim 0 1 1 0 0 1 0 1 0 0
+> sis> simulate 0 1 1 0 0 1 0 1 0 0
 > 
 > Network simulation:
 > Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -201,7 +201,7 @@ $$
 $$
 
 > ```java
-> sis> sim 0 0 0 0 0 0 0 0 0 0
+> sis> simulate 0 0 0 0 0 0 0 0 0 0
 > 
 > Network simulation:
 > Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -210,7 +210,7 @@ $$
 Infine dopo aver raggiunto un pH neutro, otteniamo `FINE_OPERAZIONE = 1`, un pH finale pari a `7,75` ed esattamente tre cicli impiegati per completare il calcolo.
 
 > ```java
-> sis> sim 0 0 0 0 0 0 0 0 0 0
+> sis> simulate 0 0 0 0 0 0 0 0 0 0
 > 
 > Network simulation:
 > Outputs: 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 1 1
@@ -221,7 +221,7 @@ Infine dopo aver raggiunto un pH neutro, otteniamo `FINE_OPERAZIONE = 1`, un pH 
 Inserendo un pH pari a `15,9375` e specificando il segnale `START = 1` otteniamo come risultato giustamente `ERRORE_SENSORE = 1`.
 
 > ```java
-> sis> sim 0 1 1 1 1 1 1 1 1 1
+> sis> simulate 0 1 1 1 1 1 1 1 1 1
 > 
 > Network simulation:
 > Outputs: 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -230,118 +230,170 @@ Inserendo un pH pari a `15,9375` e specificando il segnale `START = 1` otteniamo
 Non fornendo altri spunti al sistema otteniamo sempre `ERRORE_SENSORE = 1`.
 
 > ```java
-> sis> sim 0 0 0 0 0 0 0 0 0 0
+> sis> simulate 0 0 0 0 0 0 0 0 0 0
 > 
 > Network simulation:
 > Outputs: 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 > ```
 
-<!--
 ## Statistiche
 
-### Prima dell'ottimizzazione
+Prima dell'ottimizzazione, la macchina a stati presenta: `10` nodi, `593` letterali e `5` stati come si può vedere dal comando sottostante.
 
-Le statistiche del circuito prima dell'ottimizzazione per area sono:
+> ```java
+> sis> print_stats
+> 
+> FSM             pi=11   po= 7   nodes= 10       latches= 3
+> lits(sop)= 593  #states(STG)=   5
+> ```
 
-```js
-FSM             pi=12   po= 8   nodes= 11       latches= 3
-lits(sop)= 144  #states(STG)=   5
-```
+Al contrario l'unità di elaborazione presenta `163` nodi e `755` letterali.
 
-```js
-DATAPATH        pi=12   po=18   nodes=165       latches=17
-lits(sop)= 881
-```
+> ```java
+> sis> print_stats
+> 
+> DATAPATH        pi=12   po=17   nodes=163       latches=17
+> lits(sop)= 755
+> ```
 
-```js
-FSMD            pi=10   po=20   nodes=174       latches=17
-lits(sop)= 881
-```
+Infine unendo i due sottosistemi in un unico circuito otteniamo `173` nodi e `1348` letterali, ovvero la somma dei due.
 
-Dove:
+> ```java
+> sis> print_stats
+> 
+> FSMD            pi=10   po=20   nodes=173       latches=20
+> lits(sop)=1348
+> ```
 
-- `pi` è il numero degli input.
-- `po` è il numero degli output.
-- `nodes` è il numero di nodi.
-- `latches` è il numero di registri.
-- `lits(sop)` è il numero dei letterali.
+In risposta si ottiene anche il numero di input ed output: rispettivamente `pi` e `po` e anche il numero di registri presenti, ovvero `latches`.
 
-### Dopo l'ottimizzazione
+### Ottimizzazione
 
-Per covertire la FSM in un circuito abbiamo utilizzato i seguenti comandi:
+Per covertire la macchina a stati in un circuito abbiamo utilizzato i seguenti comandi:
 
-```sh
-state_minimize stamina
-state_assign jedi
+> ```java
+> sis> state_minimize stamina
+> sis> state_assign   jedi
+> ```
 
-stg_to_network
-```
+Il numero degli stati è rimasto identico anche dopo il comando `state_minimize stamina`.
 
-> Il numero degli stati è rimasto identico nonostante l'esecuzione del comando `state_minimize stamina`.
+Abbiamo quindi ottimizzato la macchina a stati tramite i comandi:
 
-Dopo aver convertito la FSM, abbiamo ottimizzato tutte le parti del circuito ripetendo il comando `source script.rugged` finché non ha raggiunto il miglior risultato possibile, infine abbiamo eseguito l'istruzione `fx` per ridurre ulteriormente il numero dei letterali.
+> ```java
+> sis> full_simplify
+> sis> source script.rugged
+> sis> fx
+> ```
 
-Le statistiche del circuito dopo l'ottimizzazione per area sono:
+Al contrario, per l'unità di elaborazione:
 
-```js
-FSM             pi=12   po= 8   nodes= 10       latches= 3
-lits(sop)=  47  #states(STG)=   5
-```
+> ```java
+> sis> eliminate -1
+> sis> full_simplify
+> sis> source script.rugged
+> sis> source script.rugged
+> sis> fx
+> ```
 
-```js
-DATAPATH        pi=12   po=18   nodes= 49       latches=17
-lits(sop)= 244
-```
+Infine, per il circuito completo:
 
-```js
-FSMD            pi=10   po=20   nodes= 55       latches=20
-lits(sop)= 295
-```
+> ```java
+> sis> source script.rugged
+> sis> fx
+> ```
+
+#### Risultati
+
+Dopo l'ottimizzazione, la macchina a stati presenta: `13` nodi, `54` letterali e `5` stati.
+
+> ```java
+> sis> print_stats
+> 
+> FSM             pi=11   po= 7   nodes= 13       latches= 3
+> lits(sop)=  54  #states(STG)=   5
+> ```
+
+Al contrario l'unità di elaborazione presenta `48` nodi e `220` letterali.
+
+> ```java
+> sis> print_stats
+> 
+> DATAPATH        pi=12   po=17   nodes= 48       latches=17
+> lits(sop)= 220
+> ```
+
+Infine unendo i due sottosistemi già ottimizzati in un unico circuito e lo ottimizziamo nuovamente otteniamo `62` nodi e `272` letterali.
+
+> ```java
+> sis> print_stats
+> 
+> FSMD            pi=10   po=20   nodes= 62       latches=20
+> lits(sop)= 272
+> ```
 
 ## Mappatura tecnologica
 
-Dopo l'otimizzazione del circuito si deve eseguire la mappatura tecnologica che consiste nell'associare a ogni componente la sua rappresentazione reale.
+Dopo l'ottimizzazione abbiamo eseguito la mappatura tecnologica che consiste nell'associare ad ogni componente la sua rappresentazione reale.
 
-Il circuito mappato ha le seguenti statistiche:
+Abbiamo mappato il circuito utilizzando la libreria `synch.genlib` ed il comando `map -m 0` che cerca di ridurre al minimo l'area occupata a discapito del ritardo.
 
-```sh
->>> before removing serial inverters <<<
-# of outputs:          40
-total gate area:       6480.00
-maximum arrival time: (37.00,37.00)
-maximum po slack:     (-11.40,-11.40)
-minimum po slack:     (-37.00,-37.00)
-total neg slack:      (-986.20,-986.20)
-# of failing outputs:  40
->>> before removing parallel inverters <<<
-# of outputs:          40
-total gate area:       6384.00
-maximum arrival time: (35.80,35.80)
-maximum po slack:     (-11.40,-11.40)
-minimum po slack:     (-35.80,-35.80)
-total neg slack:      (-971.80,-971.80)
-# of failing outputs:  40
-# of outputs:          40
-total gate area:       5968.00
-maximum arrival time: (35.60,35.60)
-maximum po slack:     (-11.40,-11.40)
-minimum po slack:     (-35.60,-35.60)
-total neg slack:      (-957.60,-957.60)
-# of failing outputs:  40
-```
+Eseguendo il comando `print_map_stats`, possiamo notare che l'area totale occupata dal circuito è pari a `6024,00` celle standard della libreria ed il cammino critico, cioè il numero massimo di nodi che deve percorrere per raggiungere l'uscita, è pari a `40`, infatti:
 
-Il **total gate area (area)** è `5968.00` mentre l'**arrival time (cammino critico)** è `35.60`.
+> ```java
+> sis> print_map_stats
+> 
+> Total Area              = 6024.00
+> Gate Count              = 169
+> Buffer Count            = 20
+> Inverter Count          = 39
+> Most Negative Slack     = -35.60
+> Sum of Negative Slacks  = -1005.60
+> Number of Critical PO   = 40
+> ```
 
-## La descrizione delle scelte progettuali
+Il comando `map -s` mostra le seguenti statistiche:
 
-Durante l'implementazione del progetto abbiamo fatto le seguenti scelte progettuali:
+> ```java
+> sis> map -s
+> 
+> >>> before removing serial inverters <<<
+> # of outputs:          40
+> total gate area:       6360.00
+> maximum arrival time: (38.60,38.60)
+> maximum po slack:     (-10.00,-10.00)
+> minimum po slack:     (-38.60,-38.60)
+> total neg slack:      (-1053.40,-1053.40)
+> # of failing outputs:  40
+> >>> before removing parallel inverters <<<
+> # of outputs:          40
+> total gate area:       6216.00
+> maximum arrival time: (36.20,36.20)
+> maximum po slack:     (-7.80,-7.80)
+> minimum po slack:     (-36.20,-36.20)
+> total neg slack:      (-1026.80,-1026.80)
+> # of failing outputs:  40
+> # of outputs:          40
+> total gate area:       6024.00
+> maximum arrival time: (35.60,35.60)
+> maximum po slack:     (-7.60,-7.60)
+> minimum po slack:     (-35.60,-35.60)
+> total neg slack:      (-1005.60,-1005.60)
+> # of failing outputs:  40
+> ```
 
-1. Per controllare se il pH è acido oppure basico sfruttiamo il bit più significativo, se esso è a 0 allora è acido se è a 1 allora è basico. Questo comprenderebbe che anche i valori neutri vengono assegnati a uno dei due tipi, per risolvere il problema abbiamo messo un controllore di neutralità nel DATA-PATH in modo tale che il esso comunichi alla FSM di cambiare stato da ***Acido*** o ***Basico*** a ***Neutro***.
+Abbiamo verificato il ritardo segnalato dalla libreria come `maximum arrival time` che è pari a `35,60`.
 
-1. Per controllare l'errore abbiamo aggiunto un componente al DATA-PATH che restituisce uno se e solo se è presente un errore (pH > 14) in questo modo la FSM cambia stato da ***Reset*** a ***Errore***.
+## Scelte progettuali
 
-1. Per semplificare la scrittura e la lettura dei componenti in formato `blif` abbiamo suddiviso il DATA-PATH in più pezzi (`error.blif`, `modifier.blif`, `neutral.blif`, `counter.blif`) che poi abbiamo utilizzato tramite i `subckt` e i `search`.
+Durante la progettazione abbiamo preso le seguenti scelte progettuali:
 
-1. Abbiamo aggiunto un registro per `TIPO_PH` essendo che senza di esso si andrebbe a creare un **network cycle**.
+<!-- Dopo l'inserimento del pH la macchina a stati decide in tutta autonomia in che stato transitare in base alla codifica: questo perché in ingresso -->
 
--->
+1. Durante l'inserimento può essere presente un pH inaccettabile o già neutro e l'elaboratore lo memorizza solo il ciclo dopo. Perciò è la macchina a stati a decidere in totale autonomia in quale stato transitare in base al valore.
+
+2. Dopo che la macchina ha raggiunto gli stati *Acido* e *Basico* utilizza un bit di cotrollo chiamato `NEUTRO` per decidere se raggiungere lo stato *Neutro*.
+
+3. Per semplificare l'implementazione dell'unità di elaborazione, abbiamo suddiviso il codice sorgente in più modelli distinti in base al problema che risolvono: ad esempio il file "*counter.blif*" si occupa esclusivamente dell'uscita `NCLK[8]` e viene poi utilizzato dentro il file "*DATA-PATH.blif*".
+
+4. Abbiamo usufruito di un registro ad un bit in più nell'elaboratore per evitare di causare un ciclo all'interno del circuito.

@@ -1,0 +1,53 @@
+.model MODIFIER
+.inputs SEL VAL7 VAL6 VAL5 VAL4 VAL3 VAL2 VAL1 VAL0
+.outputs RES7 RES6 RES5 RES4 RES3 RES2 RES1 RES0
+.names SEL VAL7 VAL6 RES6 CR5 RES7
+010-- 1
+-111- 1
+11-0- 1
+1001- 1
+00-01 1
+.names VAL6 [97] RES6
+01 1
+10 1
+.names VAL5 VAL4 RES4 RES3 CR5 [94] RES5
+1-10-- 1
+1---01 1
+0--1-0 1
+0100-- 1
+.names SEL VAL4 VAL3 [92] [93] RES4
+1--0- 1
+111-- 1
+01--1 1
+00--0 1
+.names VAL3 [95] RES3
+01 1
+10 1
+.names SEL VAL2 [95] RES2
+--0 1
+11- 1
+.names VAL5 VAL4 [93] CR5
+110 1
+.names VAL1 RES1
+1 1
+.names VAL0 RES0
+1 1
+.names VAL4 VAL3 [92]
+1- 1
+-1 1
+.names VAL3 VAL2 [93]
+0- 1
+-0 1
+.names SEL RES4 [94]
+0- 1
+-0 1
+.names SEL VAL2 [95]
+1- 1
+-1 1
+.names VAL5 [92] [96]
+1- 1
+-1 1
+.names SEL CR5 [96] [97]
+1-0 1
+01- 1
+.end

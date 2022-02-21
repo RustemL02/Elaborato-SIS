@@ -1,0 +1,70 @@
+.model COUNTER
+.inputs RESET STOP
+.outputs RES7 RES6 RES5 RES4 RES3 RES2 RES1 RES0
+.latch    RST7 REG7 re NIL 0
+.latch    RST6 REG6 re NIL 0
+.latch    RST5 REG5 re NIL 0
+.latch    RST4 REG4 re NIL 0
+.latch    RST3 REG3 re NIL 0
+.latch    RST2 REG2 re NIL 0
+.latch    RST1 REG1 re NIL 0
+.latch    RST0 REG0 re NIL 0
+.names STOP RST7 RES7
+11 1
+.names STOP RST6 RES6
+11 1
+.names STOP RST5 RES5
+11 1
+.names STOP RST4 RES4
+11 1
+.names STOP RST3 RES3
+11 1
+.names STOP RST2 RES2
+11 1
+.names STOP RST1 RES1
+11 1
+.names STOP RST0 RES0
+11 1
+.names RESET RST6 REG7 REG6 RST7
+-11- 1
+0-10 1
+0001 1
+.names RESET RST5 REG6 REG5 RST6
+-11- 1
+0-10 1
+0001 1
+.names RESET REG5 [84] RST5
+011 1
+000 1
+.names RESET RST0 CR4 [87] RST4
+-11- 1
+0-01 1
+.names RESET RST2 REG3 REG2 RST3
+-11- 1
+0-10 1
+0001 1
+.names RESET REG2 [85] RST2
+011 1
+000 1
+.names RESET RST0 REG1 REG0 [83] RST1
+-1--0 1
+0-10- 1
+0001- 1
+.names RESET STOP REG0 RST0
+011 1
+000 1
+.names REG4 REG3 REG2 [83] CR4
+1110 1
+.names REG1 REG0 [83]
+0- 1
+-0 1
+.names STOP CR4 [84]
+1- 1
+-0 1
+.names STOP [83] [85]
+1- 1
+-1 1
+.names RST3 REG4 REG3 [87]
+-1- 1
+0-1 1
+.end

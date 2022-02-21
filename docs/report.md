@@ -6,7 +6,7 @@ Abbiamo sviluppato un circuito che controlla un meccanismo chimico, il cui scopo
 
 Il valore del pH viene espresso in valori compresi tra `0,00` e `14,0`: nell'intervallo `[0,00, 7,00)` si trovano i valori acidi, mentre in quello `(8,00, 14,0]` si trovano i valori basici, infine i valori inclusi in `[7,00, 8,00]` sono considerati neutrali. Tutti gli altri valori non sono accettabili e comportano un errore.
 
-Il sistema è quindi dotato di due valvole: la prima può *decrementare* il valore del pH di `0.25` in un singolo ciclo di clock, mentre la seconda lo può *incrementare* di `0.50` nello stesso periodo di tempo.
+Il sistema è quindi dotato di due valvole: la prima può *decrementare* il valore del pH di `0.50` in un singolo ciclo di clock, mentre la seconda lo può *incrementare* di `0.25` nello stesso periodo di tempo.
 
 ![Illustrazione del circuito](./img/abstract-system.jpg "Illustrazione astratta del sistema."){ width=65% }
 
@@ -14,24 +14,24 @@ Il sistema è quindi dotato di due valvole: la prima può *decrementare* il valo
 
 Il circuito accetta i seguenti segnali di ingresso:
 
-| **Ingresso**          | **Descrizione**                                                                         |
-| --------------------: | :-------------------------------------------------------------------------------------- |
-| `RST`                 | Ordina al circuito di tornare allo stato iniziale. Prevale su qualsiasi altro ingresso. |
-| `START`               | Ordina al circuito di leggere il valore presente nell'ingresso `PH[8]`.                 |
-| `PH_INIZIALE[8]`      | Rappresentazione del valore iniziale assunto dal pH della soluzione.                    |
+| **Nome**                | **Descrizione**                                                 |
+| ----------------------: | :-------------------------------------------------------------- |
+| `RST`                   | Ordina al circuito di tornare allo stato iniziale.              |
+| `START`                 | Ordina al circuito di leggere il segnale `PH_INIZIALE[8]`.      |
+| `PH_INIZIALE[8]`        | Rappresenta il valore iniziale del pH.                          |
 
 L'ingresso `PH_INIZIALE[8]` è un byte codificato in **virgola fissa** con 4 bit dedicati alla parte intera.
 
 Il circuito produce i seguenti segnali di uscita:
 
-| **Uscita**            | **Descrizione**                                                                         |
-| --------------------: | :-------------------------------------------------------------------------------------- |
-| `FINE_OPER.`          | Indica che il sistema ha completato le operazioni. Ovvero il pH è neutro.               |
-| `ERRORE_SENSORE`      | Indica che il sistema ha ricevuto in ingresso un valore di pH non accettabile.          |
-| `VALVOLA_ACIDO`       | Richiede l'apertura della valvola che decrementa il valore del pH.                      |
-| `VALVOLA_BASICO`      | Richiede l'apertura della valvola che incrementa il valore del pH.                      |
-| `PH_FINALE[8]`        | Rappresentazione del valore finale assunto dal pH della soluzione.                      |
-| `NCLK[8]`             | Rappresentazione del numero di cicli utilizzati per completare le operazioni.           |
+| **Nome**                | **Descrizione**                                                 |
+| ----------------------: | :-------------------------------------------------------------- |
+| `FINE_OPERAZIONE`       | Indica che il sistema ha completato i calcoli.                  |
+| `ERRORE_SENSORE`        | Indica che il sistema ha ricevuto un pH invalido.               |
+| `VALVOLA_ACIDO`         | Richiede il decremento del pH.                                  |
+| `VALVOLA_BASICO`        | Richiede l'incremento del pH.                                   |
+| `PH_FINALE[8]`          | Rappresenta il valore finale del pH.                            |
+| `NCLK[8]`               | Rappresenta il numero di cicli impiegati.                       |
 
 L'uscita `PH_FINALE[8]` è un byte codificato esattamente come l'ingresso `PH_INIZIALE[8]`, mentre il byte `NCLK[8]` viene codificato in **modulo**.
 
@@ -41,7 +41,7 @@ Il sistema implementa il modello ***FSMD***, cioè collega una *macchina a stati
 
 Il compito della macchina a stati è quello di contestualizzare i calcoli eseguiti dall'unità di elaborazione, viceversa quest'ultima ha il ruolo di aiutare la macchina a determinare in che stato transitare.
 
-![Diagramma del circuito](./img/abstract-circuit.svg "Diagramma astratto del circuito"){ width=95% }
+![Diagramma del circuito](./img/abstract-circuit.svg "Diagramma astratto del circuito"){ width=90% }
 
 ### Segnali interni
 
@@ -49,23 +49,22 @@ Il collegamento tra i due sottosistemi avviene grazie allo scambio di segnali di
 
 I segnali di stato utilizzati sono i seguenti:
 
-| **Segnale**           | **Descrizione**                                                                         |
-| --------------------: | :-------------------------------------------------------------------------------------- |
-| `RESET`               | Ordina all'elaboratore di reinizializzare i valori.                                     |
-| `INIZIO_OPER.`        | Comunica all'elaboratore che è appena stato inserito un pH.                             |
-| `TIPO_PH`             | Permette all'elaboratore di determinare come modificare il pH.                          |
-| `STOP_OPER.`          | Comunica all'elaboratore di non modificare i valori memorizzati.                        |
+| **Nome**                | **Descrizione**                                                 |
+| ----------------------: | :-------------------------------------------------------------- |
+| `RESET`                 | Ordina all'elaboratore di inizializzare i valori.               |
+| `INIZIO_OPER.`          | Comunica all'elaboratore che è iniziata un'operazione.          |
+| `FINE_OPER.`            | Comunica all'elaboratore che è finita l'operazione.             |
+| `TIPO_PH`               | Permette all'elaboratore di modificare il pH correttamente.     |
 
 I segnali di controllo utilizzati sono i seguenti:
 
-| **Segnale**           | **Descrizione**                                                                         |
-| --------------------: | :-------------------------------------------------------------------------------------- |
-| `ERRORE`              | Comunica alla macchina che il valore del pH non è accettabile.                          |
-| `NEUTRO`              | Comunica alla macchina che il valore del pH ha raggiunto la neutralità.                 |
+| **Nome**                | **Descrizione**                                                 |
+| ----------------------: | :-------------------------------------------------------------- |
+| `NEUTRO`                | Comunica alla macchina che il pH ha raggiunto la neutralità.    |
 
 ## Macchina a stati finiti (FSM)
 
-Abbiamo individuato cinque stati per questa macchina, cioè:
+Abbiamo progettato una macchina a stati di tipo *Mealy* e ne abbiamo individuato cinque stati, cioè:
 
 1. `Reset`: stato iniziale nel quale il circuito attende il pH in ingresso;
 2. `Errore`: il valore del pH appena inserito non è valido;
@@ -77,71 +76,84 @@ Abbiamo individuato cinque stati per questa macchina, cioè:
 
 Lo stato iniziale della macchina è quello di *Reset*, da questo può spostarsi solamente quando riceve il segnale `START = 1`, in quel caso:
 
-- Quando il segnale di controllo `ERRORE` vale `1` transita nello stato di *Errore*;
-- Quando il bit più significativo del segnale `PH[8]` vale `0` e non sono presenti errori, transita nello stato *Acido*;
-- Quando il bit più significatico del segnale `PH[8]` vale `1` e non sono presenti errori, transita nello stato *Basico*.
+- quando il pH è superiore a `14,0` transita nello stato di *Errore*;
+- quando il pH è minore stretto di `7,00` transita nello stato di *Acido*;
+- quando il pH è maggiore stretto di `8,00` transita nello stato di *Basico*;
+- quando il pH è già compreso nell'intervallo `[7,00, 8,00]` transita nello stato di *Neutro*.
 
-La macchina si sposta nello stato *Neutro* quando il segnale di controllo `NEUTRO` vale `1`, infine, da ognuno degli stati può tornare a quello iniziale quando riceve il segnale `RST = 1`.
+Da ognuno degli stati può tornare a quello iniziale solo quando riceve il segnale `RST = 1`, altrimenti si sposta da *Acido* e *Basico* verso *Neutro* quando il segnale di controllo `NEUTRO = 1`.
 
-#### Segnali della macchina
-
-I segnali utilizzati dalla macchina a stati sono i seguenti in ordine di presentazione:
-
-| **Segnali** | **D'ingresso**       | **D'uscita**         |
-| :---------: | :------------------- | :------------------- |
-| **Esterni** | `RST`                | `FINE_OPERAZIONE`    |
-|             | `START`              | `ERRORE_SENSORE`     |
-|             | `PH_INIZIALE[8]`     | `VALVOLA_ACIDO`      |
-|             |                      | `VALVOLA_BASICO`     |
-|             |                      |                      |
-| **Interni** | `ERRORE`             | `RESET`              |
-|             | `NEUTRO`             | `INIZIO_OPERAZIONE`  |
-|             |                      | `TIPO_PH`            |
-|             |                      | `STOP_OPERAZIONE`    |
+> Il segnale `RST` ha la precendeza su `START`, in altre parole: quando entrambi equivalgono ad `1`, il secondo viene semplicemente ignorato.
 
 ### Grafo delle transizioni (STG)
 
-Replicando il comportamento sopra descritto, abbiamo quindi costruito il seguente grafo delle transizioni:
+Implementando il comportamento sopra descritto, abbiamo costruito il grafo delle transizioni utilizzando i seguenti segnali:
 
-![Macchina a stati](./img/state-machine.svg "Macchina a stati finiti"){ width=95% }
+| **Segnali** | **D'ingresso**       | **D'uscita**         |
+| :---------: | :------------------- | :------------------- |
+| **Esterni** | `RST`                | `FINE_OPER.`         |
+|             | `START`              | `ERRORE_SENSORE`     |
+|             | `PH_INIZIALE[8]`     | `VALVOLA_ACIDO`      |
+|             |                      | `VALVOLA_BASICO`     |
+| **Interni** | `NEUTRO`             | `RESET`              |
+|             |                      | `INIZIO_OPER.`       |
+|             |                      | `TIPO_PH`            |
+
+![Macchina a stati](./img/state-machine.svg "Macchina a stati finiti"){ width=100% }
 
 #### Transizione di esempio
 
-La transizione dallo stato *Reset* verso *Basico* avviene quando:
+La transizione dallo stato *Reset* verso *Acido* avviene quando riceve:
 
-- il segnale `RST` equivale a `0`;
-- il segnale `START` equivale ad `1`;
-- il bit più significativo di `PH_INIZIALE[8]` vale `1`;
-- il segnale `ERRORE` equivale a `0`.
+- i segnali `RST = 0` e `START = 1`;
+- i segnale `PH_INIZIALE[8]` interno a `[0, 7)`.
 
-Viene ignorato il segnale `NEUTRO` perché il circuito deve prima memorizzare il valore e solo in un ciclo successivo è in grado di rilevare la sua eventuale neutralità; infatti la macchina a stati non è in grado di raggiungere lo stato *Neutro* senza prima transitare per *Acido* o *Basico*.
+Il segnale `NEUTRO` viene ignorato perché l'unità di elaborazione non ha ancora memorizzato il pH: viene memorizzato solamente dopo la prima transizione verso uno stato diverso da *Reset*.
 
-> Nel codice sorgente tale transizione viene descritta come:
->
+Nel codice sorgente tale transizione viene descritta come:
+
 > ```java
-> 011-------0- Reset Basico 00100110
+> 010--0----- Reset Acido 0001010
+> 010-0------ Reset Acido 0001010
+> 0100------- Reset Acido 0001010
 > ```
 
 ## Unità di elaborazione (Data path)
 
-Abbiamo suddiviso l'unità di elaborazione in più sottoproblemi risolti da delle componenti specifiche:
+Abbiamo suddiviso l'unità di elaborazione in più sottoproblemi risolti da delle parti specifiche:
 
 1. *Contatore dei cicli*: memorizza ed incrementa il numero di cicli impiegati;
-2. *Modificatore del pH*: aggiorna il valore del pH;
-3. *Verificatore di neutralità*: determina se il valore del pH è interno a `[7,00, 8,00]`;
-4. *Verificatore di errore*: determina se il valore del pH è superiore a `14,0`.
+2. *Corpo principale*: si occupa della modifica del pH.
 
-### Conteggio dei cicli
+<!-- 2. *Modificatore del pH*: aggiorna il valore del pH;
+3. *Verificatore di neutralità*: determina se il valore del pH è interno a `[7,00, 8,00]`; -->
+
+### Contatore dei cicli
 
 Il contatore è composto da: un registro, tre multiplexer ed un sommatore ad 8 bit.
 
-![Contatore dei cicli](img/components/counter.svg "Contatore dei cicli"){ width=79% }
+![Contatore dei cicli](img/components/counter.svg "Contatore dei cicli"){ width=90% }
 
-> È un componente dedicato esclusivamente al calcolo dell'uscita `NCLK[8]`, mentre gli altri collaborano tra loro sia per determinare i segnali di controllo, che soprattutto per calcolare l'uscita `PH_FINALE[8]`.
+È il componente dedicato esclusivamente al calcolo dell'uscita `NCLK[8]`.
 
-Incrementa di `1` il valore memorizzato nel registro ad ogni ciclo ad eccezione dei casi in cui riceve il segnale `STOP = 1`. Invece, quando l'ingresso `RESET` equivale ad `1`, indipendentemente dal valore dell'altro, azzera il valore memorizzato nel registro.
+Ad ogni ciclo incrementa il valore memorizzato di un'unità. Quando riceve i segnali `RESET = 1` o `INIZIO_OPERAZIONE = 1` azzera il conteggio, mentre quando il segnale `FINE_OPERAZIONE = 1` non incrementa il valore e lo mostra in uscita.
 
-### Modifica del pH
+### Corpo principale
+
+Il corpo principale è composto da: quattro multiplexer e due registri ad 8 bit.
+
+![Unità principale](./img/data-path.jpg "Unità principale"){ width=100% }
+
+Quando il segnale `RESET = 1` il circuito inizializza il registro, invece quando equivale a `0` e `INIZIO_OPERAZIONE = 1` l'elaboratore legge `PH_INIZIALE[8]`.
+
+> Il segnale `RESET` ha la precendeza su `INIZIO_OPERAZIONE`, in altre parole: quando entrambi equivalgono ad `1`, il secondo viene semplicemente ignorato.
+
+Il byte che giunge dai multiplexer viene memorizzato nel registro. Nel ciclo di clock successivo viene fornito il valore al *Verificatore di neutralità* ed al *Modificatore del pH*, infine:
+
+- se il valore del segnale `FINE_OPERAZIONE` equivale a `0` memorizza il valore modificato;
+- altrimenti lo lascia intatto e mostra l'uscita `PH_FINALE[8]`.
+
+#### Modifica del pH
 
 Il modificatore è composto da: un sommatore, un sottrattore ed un multiplexer ad 8 bit.
 
@@ -149,10 +161,10 @@ Il modificatore è composto da: un sommatore, un sottrattore ed un multiplexer a
 
 Modifica il valore dell'ingresso `PH[8]` in funzione del segnale `TIPO_PH`, cioé:
 
-- nel caso in cui `TIPO_PH` equivale a `0` incrementa il pH di `0,50`;
-- nel caso in cui `TIPO_PH` equivale ad `1` decrementa il pH di `0,25`.
+- quando `TIPO_PH` equivale a `0` incrementa il pH di `0,25`;
+- quando `TIPO_PH` equivale ad `1` decrementa il pH di `0,50`.
 
-### Verifica della neutralità
+#### Verifica della neutralità
 
 Il componente è composto da: un maggiore ed un minore ad 8 bit ed una porta NOR.
 
@@ -163,225 +175,231 @@ Verifica il valore dell'ingresso `PH_INIZIALE[8]`, cioè:
 - se questo è incluso in `[7,00, 8,00]` allora restituisce `1`, cioè *vero*;
 - altrimenti restituisce `0` cioè *falso*.
 
-### Verifica degli errori
-
-Il componente è composto da un maggiore ad 8 bit.
-
-Verifica il valore dell'ingresso `PH_INIZIALE[8]`, cioè:
-
-- se questo è superiore a `14,0`, allora restituisce `1`, cioè *vero*;
-- altrimenti restituisce `0` cioè *falso*.
-
-![Verificatore di errore](./img/components/error.svg "Verificatore di errore"){ width=28% }
-
-### Unità completa
-
-È composta da: due registri, quattro multiplexer ad 8 bit, un modificatore, un verificatore di errore ed uno di neutralità.
-
-> Coordina gli altri componenti tramite registri e multiplexer aggiuntivi.
-
-#### Corpo principale
-
-Quando sia il segnale `INIZIO_OPERAZIONE` che `RESET` valgono `0` il circuito continua ad elaborare il valore inserito precedentemente, al contrario:
-
-- se `RESET` equivale ad `1`, indipendentemente dagli altri ingressi, il circuito restituisce un byte azzerato;
-- oppure, se `INIZIO_OPERAZIONE` vale `1` restituisce il segnale `PH_INIZIALE[8]`;
-
-Questo valore viene quindi analizzato tramite il *Verificatore di errore* per determinare se la codifica è accettabile, viene restituito se il segnale `STOP_OPERAZIONE` equivale ad `1` e viene finalmente memorizzato nel registro.
-
-Nel ciclo di clock successivo il circuito utilizza il *Modificatore del pH* per aggiornare il valore, e ancora:
-
-- quando il valore del segnale di stato `STOP_OPERAZIONE` equivale a `0` restituisce il valore modificato;
-- altrimenti se equivale ad `1` restituisce il valore memorizzato.
-
-Infine usufruisce del *Verificatore di neutralità* per determinare se il valore è neutro ed indirizza il nuovo risultato all'interno dei multiplexer iniziali.
-
-Il segnale di uscita `PH_FINALE[8]` non viene restituito finché il segnale `STOP_OPERAZIONE` non quivale ad `1`: in quel caso restituisce il valore prodotto dai multiplexer iniziali.
-
-#### Contatore
-
-Il circuito utilizza il *Contatore dei cicli* per riuscire a determinare quante operazioni ha impiegato per raggiungere il risultato. Il segnale di uscita `NCLK[8]` non viene restituito finché il segnale `STOP_OPERAZIONE` non diviene uguale ad `1`.
-
-#### Segnali dell'unità
-
-I segnali utilizzati dall'unità a stati sono i seguenti in ordine di presentazione:
-
-| **Segnali** | **D'ingresso**       | **D'uscita**         |
-| :---------: | :------------------- | :------------------- |
-| **Esterni** | `PH_INIZIALE[8]`     | `PH_FINALE[8]`       |
-|             |                      | `NCLK[8]`            |
-|             |                      |                      |
-| **Interni** | `RESET`              | `ERRORE`             |
-|             | `INIZIO_OPERAZIONE`  | `NEUTRO`             |
-|             | `TIPO_PH`            |                      |
-|             | `STOP_OPERAZIONE`    |                      |
-
-![Unità di elaborazione](./img/data-path.jpg "Unità di elaborazione"){ width=95% }
-
-Il registro ad 1 bit che memorizza il segnale `TIPO_PH` è presente per evitare di creare un ciclo all'interno del circuito e renderlo non deterministico.
-
-Sostituendo il contenuto dei componenti all'interno del corpo principale otteniamo il seguente circuito:
-
-![Unità di elaborazione](./img/data-path-full.jpg "Unità di elaborazione"){ width=100% }
-
-Il *Contatore dei cicli* invece è un componente autonomo e abbiamo scelto di non includerlo in questa immagine per problemi di spazio, è comunque presente all'interno del circuito.
-
 ## Simulazioni di esempio
 
-Dopo aver progettato i due sottosistemi abbiamo provato alcuni flussi di esecuzione: il primo vede come ingresso un pH pari a `5,75` che quindi impiega 4 cicli per completare l'operazione con un pH finale di `5,75`; nel secondo invece abbiamo tentato di inserire un pH non valido e dopo aver segnalato l'errore non ha elaborato oltre.
+Ecco due esempi di esecuzione del circuito.
 
-```sh
-# Inserendo RST = 0, START = 1, PH = 5,75.
-sis> simulate 0 1 0 1 0 1 1 1 0 0 
+### Esempio 1
 
-# Otteniamo VALVOLA_BASICO = 1.
-Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00101110000000001010
+Inserendo un pH pari a `9,25` e specificando il segnale `START = 1` otteniamo come risultato semplicemente `VALVOLA_ACIDO = 1`.
 
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
+> ```java
+> sis> simulate 0 1 1 0 0 1 0 1 0 0
+> 
+> Network simulation:
+> Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+> ```
 
-# Prosegue con l'elaborazione.
-Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00110010000000010010
+Non fornendo altri spunti al sistema per tre volte otteniamo sempre `VALVOLA_ACIDO = 1`, infatti:
 
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
+$$
+\begin{aligned}
+    9,25 - 0,&50 = 8,75 \\
+    8,75 - 0,&50 = 8,25 \\
+    8,25 - 0,&50 = 7,75 \\
+\end{aligned}
+$$
 
-# Prosegue con l'elaborazione.
-Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00110110000000011010
+> ```java
+> sis> simulate 0 0 0 0 0 0 0 0 0 0
+> 
+> Network simulation:
+> Outputs: 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+> ```
 
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
+Infine dopo aver raggiunto un pH neutro, otteniamo `FINE_OPERAZIONE = 1`, un pH finale pari a `7,75` ed esattamente tre cicli impiegati per completare il calcolo.
 
-# Prosegue con l'elaborazione.
-Network simulation:
-Outputs: 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-Next state: 00111010000000100010
+> ```java
+> sis> simulate 0 0 0 0 0 0 0 0 0 0
+> 
+> Network simulation:
+> Outputs: 1 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 1 1
+> ```
 
-# Inserendo tutti i valori a 0.
-sis> simulate 0 0 0 0 0 0 0 0 0 0
+### Esempio 2
 
-# Otteniamo FINE_OPERAZIONE = 1, PH = 7,25, NCLK = 4.
-Network simulation:
-Outputs: 1 0 0 0 0 1 1 1 0 1 0 0 0 0 0 0 0 1 0 0
-Next state: 00111010000000100001
-```
+Inserendo un pH pari a `15,9375` e specificando il segnale `START = 1` otteniamo come risultato giustamente `ERRORE_SENSORE = 1`.
 
-<!-- 
-## Alcune simulazioni
+> ```java
+> sis> simulate 0 1 1 1 1 1 1 1 1 1
+> 
+> Network simulation:
+> Outputs: 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+> ```
 
-SIMULAZIONI
+Non fornendo altri spunti al sistema otteniamo sempre `ERRORE_SENSORE = 1`.
+
+> ```java
+> sis> simulate 0 0 0 0 0 0 0 0 0 0
+> 
+> Network simulation:
+> Outputs: 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+> ```
 
 ## Statistiche
 
-### Prima dell'ottimizzazione
+Prima dell'ottimizzazione, la macchina a stati presenta: `10` nodi, `593` letterali e `5` stati come si può vedere dal comando sottostante.
 
-Le statistiche del circuito prima dell'ottimizzazione per area sono:
+> ```java
+> sis> print_stats
+> 
+> FSM             pi=11   po= 7   nodes= 10       latches= 3
+> lits(sop)= 593  #states(STG)=   5
+> ```
 
-```js
-FSM             pi=12   po= 8   nodes= 11       latches= 3
-lits(sop)= 144  #states(STG)=   5
-```
+Al contrario l'unità di elaborazione presenta `163` nodi e `755` letterali.
 
-```js
-DATAPATH        pi=12   po=18   nodes=165       latches=17
-lits(sop)= 881
-```
+> ```java
+> sis> print_stats
+> 
+> DATAPATH        pi=12   po=17   nodes=163       latches=17
+> lits(sop)= 755
+> ```
 
-```js
-FSMD            pi=10   po=20   nodes=174       latches=17
-lits(sop)= 881
-```
+Infine unendo i due sottosistemi in un unico circuito otteniamo `173` nodi e `1348` letterali, ovvero la somma dei due.
 
-Dove:
+> ```java
+> sis> print_stats
+> 
+> FSMD            pi=10   po=20   nodes=173       latches=20
+> lits(sop)=1348
+> ```
 
-- `pi` è il numero degli input.
-- `po` è il numero degli output.
-- `nodes` è il numero di nodi.
-- `latches` è il numero di registri.
-- `lits(sop)` è il numero dei letterali.
+In risposta si ottiene anche il numero di input ed output: rispettivamente `pi` e `po` e anche il numero di registri presenti, ovvero `latches`.
 
-### Dopo l'ottimizzazione
+### Ottimizzazione
 
-Per covertire la FSM in un circuito abbiamo utilizzato i seguenti comandi:
+Per covertire la macchina a stati in un circuito abbiamo utilizzato i seguenti comandi:
 
-```sh
-state_minimize stamina
-state_assign jedi
+> ```java
+> sis> state_minimize stamina
+> sis> state_assign   jedi
+> ```
 
-stg_to_network
-```
+Il numero degli stati è rimasto identico anche dopo il comando `state_minimize stamina`.
 
-> Il numero degli stati è rimasto identico nonostante l'esecuzione del comando `state_minimize stamina`.
+Abbiamo quindi ottimizzato la macchina a stati tramite i comandi:
 
-Dopo aver convertito la FSM, abbiamo ottimizzato tutte le parti del circuito ripetendo il comando `source script.rugged` finché non ha raggiunto il miglior risultato possibile, infine abbiamo eseguito l'istruzione `fx` per ridurre ulteriormente il numero dei letterali.
+> ```java
+> sis> full_simplify
+> sis> source script.rugged
+> sis> fx
+> ```
 
-Le statistiche del circuito dopo l'ottimizzazione per area sono:
+Al contrario, per l'unità di elaborazione:
 
-```js
-FSM             pi=12   po= 8   nodes= 10       latches= 3
-lits(sop)=  47  #states(STG)=   5
-```
+> ```java
+> sis> eliminate -1
+> sis> full_simplify
+> sis> source script.rugged
+> sis> source script.rugged
+> sis> fx
+> ```
 
-```js
-DATAPATH        pi=12   po=18   nodes= 49       latches=17
-lits(sop)= 244
-```
+Infine, per il circuito completo:
 
-```js
-FSMD            pi=10   po=20   nodes= 55       latches=20
-lits(sop)= 295
-```
+> ```java
+> sis> source script.rugged
+> sis> fx
+> ```
+
+#### Risultati
+
+Dopo l'ottimizzazione, la macchina a stati presenta: `13` nodi, `54` letterali e `5` stati.
+
+> ```java
+> sis> print_stats
+> 
+> FSM             pi=11   po= 7   nodes= 13       latches= 3
+> lits(sop)=  54  #states(STG)=   5
+> ```
+
+Al contrario l'unità di elaborazione presenta `48` nodi e `220` letterali.
+
+> ```java
+> sis> print_stats
+> 
+> DATAPATH        pi=12   po=17   nodes= 48       latches=17
+> lits(sop)= 220
+> ```
+
+Infine unendo i due sottosistemi già ottimizzati in un unico circuito e lo ottimizziamo nuovamente otteniamo `62` nodi e `272` letterali.
+
+> ```java
+> sis> print_stats
+> 
+> FSMD            pi=10   po=20   nodes= 62       latches=20
+> lits(sop)= 272
+> ```
 
 ## Mappatura tecnologica
 
-Dopo l'otimizzazione del circuito si deve eseguire la mappatura tecnologica che consiste nell'associare a ogni componente la sua rappresentazione reale.
+Dopo l'ottimizzazione abbiamo eseguito la mappatura tecnologica che consiste nell'associare ad ogni componente la sua rappresentazione reale.
 
-Il circuito mappato ha le seguenti statistiche:
+Abbiamo mappato il circuito utilizzando la libreria `synch.genlib` ed il comando `map -m 0` che cerca di ridurre al minimo l'area occupata a discapito del ritardo.
 
-```sh
->>> before removing serial inverters <<<
-# of outputs:          40
-total gate area:       6480.00
-maximum arrival time: (37.00,37.00)
-maximum po slack:     (-11.40,-11.40)
-minimum po slack:     (-37.00,-37.00)
-total neg slack:      (-986.20,-986.20)
-# of failing outputs:  40
->>> before removing parallel inverters <<<
-# of outputs:          40
-total gate area:       6384.00
-maximum arrival time: (35.80,35.80)
-maximum po slack:     (-11.40,-11.40)
-minimum po slack:     (-35.80,-35.80)
-total neg slack:      (-971.80,-971.80)
-# of failing outputs:  40
-# of outputs:          40
-total gate area:       5968.00
-maximum arrival time: (35.60,35.60)
-maximum po slack:     (-11.40,-11.40)
-minimum po slack:     (-35.60,-35.60)
-total neg slack:      (-957.60,-957.60)
-# of failing outputs:  40
-```
+Eseguendo il comando `print_map_stats`, possiamo notare che l'area totale occupata dal circuito è pari a `6024,00` celle standard della libreria ed il cammino critico, cioè il numero massimo di nodi che deve percorrere per raggiungere l'uscita, è pari a `40`, infatti:
 
-Il **total gate area (area)** è `5968.00` mentre l'**arrival time (cammino critico)** è `35.60`.
+> ```java
+> sis> print_map_stats
+> 
+> Total Area              = 6024.00
+> Gate Count              = 169
+> Buffer Count            = 20
+> Inverter Count          = 39
+> Most Negative Slack     = -35.60
+> Sum of Negative Slacks  = -1005.60
+> Number of Critical PO   = 40
+> ```
 
-## La descrizione delle scelte progettuali
+Il comando `map -s` mostra le seguenti statistiche:
 
-Durante l'implementazione del progetto abbiamo fatto le seguenti scelte progettuali:
+> ```java
+> sis> map -s
+> 
+> >>> before removing serial inverters <<<
+> # of outputs:          40
+> total gate area:       6360.00
+> maximum arrival time: (38.60,38.60)
+> maximum po slack:     (-10.00,-10.00)
+> minimum po slack:     (-38.60,-38.60)
+> total neg slack:      (-1053.40,-1053.40)
+> # of failing outputs:  40
+> >>> before removing parallel inverters <<<
+> # of outputs:          40
+> total gate area:       6216.00
+> maximum arrival time: (36.20,36.20)
+> maximum po slack:     (-7.80,-7.80)
+> minimum po slack:     (-36.20,-36.20)
+> total neg slack:      (-1026.80,-1026.80)
+> # of failing outputs:  40
+> # of outputs:          40
+> total gate area:       6024.00
+> maximum arrival time: (35.60,35.60)
+> maximum po slack:     (-7.60,-7.60)
+> minimum po slack:     (-35.60,-35.60)
+> total neg slack:      (-1005.60,-1005.60)
+> # of failing outputs:  40
+> ```
 
-1. Per controllare se il pH è acido oppure basico sfruttiamo il bit più significativo, se esso è a 0 allora è acido se è a 1 allora è basico. Questo comprenderebbe che anche i valori neutri vengono assegnati a uno dei due tipi, per risolvere il problema abbiamo messo un controllore di neutralità nel DATA-PATH in modo tale che il esso comunichi alla FSM di cambiare stato da ***Acido*** o ***Basico*** a ***Neutro***.
+Abbiamo verificato il ritardo segnalato dalla libreria come `maximum arrival time` che è pari a `35,60`.
 
-1. Per controllare l'errore abbiamo aggiunto un componente al DATA-PATH che restituisce uno se e solo se è presente un errore (pH > 14) in questo modo la FSM cambia stato da ***Reset*** a ***Errore***.
+## Scelte progettuali
 
-1. Per semplificare la scrittura e la lettura dei componenti in formato `blif` abbiamo suddiviso il DATA-PATH in più pezzi (`error.blif`, `modifier.blif`, `neutral.blif`, `counter.blif`) che poi abbiamo utilizzato tramite i `subckt` e i `search`.
+Durante la progettazione abbiamo preso le seguenti scelte progettuali:
 
-1. Abbiamo aggiunto un registro per `TIPO_PH` essendo che senza di esso si andrebbe a creare un **network cycle**.
+<!-- Dopo l'inserimento del pH la macchina a stati decide in tutta autonomia in che stato transitare in base alla codifica: questo perché in ingresso -->
 
--->
+1. Durante l'inserimento può essere presente un pH inaccettabile o già neutro e l'elaboratore lo memorizza solo il ciclo dopo. Perciò è la macchina a stati a decidere in totale autonomia in quale stato transitare in base al valore;
+
+2. Dopo che la macchina ha raggiunto gli stati *Acido* e *Basico* utilizza un bit di cotrollo chiamato `NEUTRO` per decidere se raggiungere lo stato *Neutro*;
+
+3. Abbiamo usufruito di un registro ad un bit in più nell'elaboratore per evitare di causare un ciclo all'interno del circuito;
+
+4. Per semplificare l'implementazione dell'unità di elaborazione, abbiamo suddiviso il codice sorgente in più modelli distinti in base al problema che risolvono: ad esempio il file "*counter.blif*" si occupa esclusivamente dell'uscita `NCLK[8]` e viene poi utilizzato dentro il file "*DATA-PATH.blif*";
+
+5. Il contatore viene inizializzato sia quando il circuito riceve `RST = 1` sia quando riceve `START = 1`;
+
+6. In qualsiasi stato diverso da *Reset* anche se giunge il segnale `START = 1`, il circuito continua l'elaborazione, l'unico modo per interromperla è inviare il segnale `RST = 1`;
+
+7. Quando viene inserito un pH inaccettabile, il circuito risponde semplicemente con `ERRORE_SENSORE = 1`, invece quando viene inserito un valore già neutro dapprima solo con `FINE_OPERAZIONE = 1` e dal ciclo successivo in poi anche con la codifica inserita e `NCLK[8] = 0`.

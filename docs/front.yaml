@@ -3,10 +3,10 @@ title: \
   ![Logo](./img/logo.png) \
   Relazione progetto SIS
 date: 21/02/2022
-author:
-  - Bottacini Luca
-  - Lecini Rustem
-  - Roin Giovanni
+author: |
+  | Bottacini Luca (VR474339)
+  | Lecini Rustem (VR471559)
+  | Roin Giovanni (VR471473)
 toc: true
 toc-title: Indice
 lang: it-IT

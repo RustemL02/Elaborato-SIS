@@ -64,7 +64,7 @@ I segnali di controllo utilizzati sono i seguenti:
 
 ## Macchina a stati finiti (FSM)
 
-Abbiamo individuato cinque stati per questa macchina, cioè:
+Abbiamo progettato una macchina a stati di tipo *Mealy* e ne abbiamo individuato cinque stati, cioè:
 
 1. `Reset`: stato iniziale nel quale il circuito attende il pH in ingresso;
 2. `Errore`: il valore del pH appena inserito non è valido;

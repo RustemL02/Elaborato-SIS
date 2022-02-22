@@ -385,8 +385,6 @@ Abbiamo verificato il ritardo segnalato dalla libreria come `maximum arrival tim
 
 Durante la progettazione abbiamo preso le seguenti scelte progettuali:
 
-<!-- Dopo l'inserimento del pH la macchina a stati decide in tutta autonomia in che stato transitare in base alla codifica: questo perché in ingresso -->
-
 1. Durante l'inserimento può essere presente un pH inaccettabile o già neutro e l'elaboratore lo memorizza solo il ciclo dopo. Perciò è la macchina a stati a decidere in totale autonomia in quale stato transitare in base al valore;
 
 2. Dopo che la macchina ha raggiunto gli stati *Acido* e *Basico* utilizza un bit di cotrollo chiamato `NEUTRO` per decidere se raggiungere lo stato *Neutro*;

@@ -125,12 +125,9 @@ Abbiamo suddiviso l'unità di elaborazione in più sottoproblemi risolti da dell
 1. *Contatore dei cicli*: memorizza ed incrementa il numero di cicli impiegati;
 2. *Corpo principale*: si occupa della modifica del pH.
 
-<!-- 2. *Modificatore del pH*: aggiorna il valore del pH;
-3. *Verificatore di neutralità*: determina se il valore del pH è interno a `[7,00, 8,00]`; -->
-
 ### Contatore dei cicli
 
-Il contatore è composto da: un registro, tre multiplexer ed un sommatore ad 8 bit.
+Il contatore è composto da: una or, un registro, tre multiplexer da 2 ingressi ed un sommatore ad 8 bit.
 
 ![Contatore dei cicli](img/components/counter.svg "Contatore dei cicli"){ width=90% }
 
@@ -140,7 +137,7 @@ Ad ogni ciclo incrementa il valore memorizzato di un'unità. Quando riceve i seg
 
 ### Corpo principale
 
-Il corpo principale è composto da: quattro multiplexer e due registri ad 8 bit.
+Il corpo principale è composto da: cinque multiplexer da 2 ingressi, un sommatore, un sottrattore, una xor, un minore, un maggiore, un registro ad 8 bit e un registro a 1 bit.
 
 ![Unità principale](./img/data-path.jpg "Unità principale"){ width=100% }
 
@@ -155,7 +152,7 @@ Il byte che giunge dai multiplexer viene memorizzato nel registro. Nel ciclo di 
 
 #### Modifica del pH
 
-Il modificatore è composto da: un sommatore, un sottrattore ed un multiplexer ad 8 bit.
+Il modificatore è composto da: un sommatore, un sottrattore ed un multiplexer da 2 ingressi ad 8 bit.
 
 ![Modificatore del pH](./img/components/modifier.svg "Modificatore del pH"){ width=50% }
 
@@ -166,7 +163,7 @@ Modifica il valore dell'ingresso `PH[8]` in funzione del segnale `TIPO_PH`, cio�
 
 #### Verifica della neutralità
 
-Il componente è composto da: un maggiore ed un minore ad 8 bit ed una porta NOR.
+Il componente è composto da: un maggiore ed un minore ad 8 bit e una porta NOR.
 
 ![Verificatore di neutralità](./img/components/neutral.svg "Verificatore di neutralità"){ width=60% }
 

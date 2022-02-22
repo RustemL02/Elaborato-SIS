@@ -27,5 +27,5 @@
 
 .end
 
-.search FSM-ott.blif
-.search DATA-PATH-ott.blif
+.search FSM-net.blif
+.search DATA-PATH.blif

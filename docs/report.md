@@ -45,9 +45,9 @@ Il compito della macchina a stati è quello di contestualizzare i calcoli esegui
 
 ### Segnali interni
 
-Il collegamento tra i due sottosistemi avviene grazie allo scambio di segnali di stato e controllo; i primi vengono emessi dalla macchina a stati verso l'elaboratore, i secondi seguono il percorso inverso.
+Il collegamento tra i due sottosistemi avviene grazie allo scambio di segnali di controllo e stato; i primi vengono emessi dalla macchina a stati verso l'elaboratore, i secondi seguono il percorso inverso.
 
-I segnali di stato utilizzati sono i seguenti:
+I segnali di controllo utilizzati sono i seguenti:
 
 | **Nome**                | **Descrizione**                                                 |
 | ----------------------: | :-------------------------------------------------------------- |
@@ -56,7 +56,7 @@ I segnali di stato utilizzati sono i seguenti:
 | `FINE_OPER.`            | Comunica all'elaboratore che è finita l'operazione.             |
 | `TIPO_PH`               | Permette all'elaboratore di modificare il pH correttamente.     |
 
-I segnali di controllo utilizzati sono i seguenti:
+I segnali di stato utilizzati sono i seguenti:
 
 | **Nome**                | **Descrizione**                                                 |
 | ----------------------: | :-------------------------------------------------------------- |

@@ -106,7 +106,7 @@ Implementando il comportamento sopra descritto, abbiamo costruito il grafo delle
 La transizione dallo stato *Reset* verso *Acido* avviene quando riceve:
 
 - i segnali `RST = 0` e `START = 1`;
-- i segnale `PH_INIZIALE[8]` interno a `[0, 7)`.
+- i segnale `PH_INIZIALE[8]` interno a `[0,00, 7,00)`.
 
 Il segnale `NEUTRO` viene ignorato perché l'unità di elaborazione non ha ancora memorizzato il pH: viene memorizzato solamente dopo la prima transizione verso uno stato diverso da *Reset*.
 
@@ -127,7 +127,7 @@ Abbiamo suddiviso l'unità di elaborazione in più sottoproblemi risolti da dell
 
 ### Contatore dei cicli
 
-Il contatore è composto da: una or, un registro, tre multiplexer da 2 ingressi ed un sommatore ad 8 bit.
+Il contatore è composto da: una OR, un registro, tre multiplexer da 2 ingressi ed un sommatore ad 8 bit.
 
 ![Contatore dei cicli](img/components/counter.svg "Contatore dei cicli"){ width=90% }
 
@@ -137,7 +137,7 @@ Ad ogni ciclo incrementa il valore memorizzato di un'unità. Quando riceve i seg
 
 ### Corpo principale
 
-Il corpo principale è composto da: cinque multiplexer da 2 ingressi, un sommatore, un sottrattore, una xor, un minore, un maggiore, un registro ad 8 bit e un registro a 1 bit.
+Il corpo principale è composto da: cinque multiplexer da 2 ingressi, un sommatore, un sottrattore, un minore, un maggiore, un registro ad 8 bit, un registro e una NOR a 1 bit.
 
 ![Unità principale](./img/data-path.jpg "Unità principale"){ width=100% }
 
@@ -266,7 +266,7 @@ In risposta si ottiene anche il numero di input ed output: rispettivamente `pi` 
 
 ### Ottimizzazione
 
-Per covertire la macchina a stati in un circuito abbiamo utilizzato i seguenti comandi:
+Per convertire la macchina a stati in un circuito abbiamo utilizzato i seguenti comandi:
 
 > ```java
 > sis> state_minimize stamina
@@ -383,7 +383,7 @@ Abbiamo verificato il ritardo segnalato dalla libreria come `maximum arrival tim
 
 ## Scelte progettuali
 
-Durante la progettazione abbiamo preso le seguenti scelte progettuali:
+Durante la progettazione abbiamo preso le seguenti decisioni:
 
 1. Durante l'inserimento può essere presente un pH inaccettabile o già neutro e l'elaboratore lo memorizza solo il ciclo dopo. Perciò è la macchina a stati a decidere in totale autonomia in quale stato transitare in base al valore;
 
